@@ -29,7 +29,7 @@ public class factoryData_QuickTemplate_asynchronous implements Queueable {
     boolean contactsOnly = false;
 
     // Standard template for ORG with 200 MB
-    Map<ObjectTypes,Integer> objectCount = new Map<ObjectTypes,Integer> {ObjectTypes.ACCOUNTS=>10000,ObjectTypes.CONTACTS=>10000,
+    Map<ObjectTypes,Integer> objectCount = new Map<ObjectTypes,Integer> {ObjectTypes.ACCOUNTS=>500,ObjectTypes.CONTACTS=>10000,
             ObjectTypes.OPPORTUNITIES=>100,ObjectTypes.CASES=>200, ObjectTypes.LEADS=>300};
 
     public void execute(QueueableContext Context) {
