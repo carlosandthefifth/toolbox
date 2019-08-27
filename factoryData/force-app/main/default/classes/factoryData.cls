@@ -184,7 +184,7 @@ public with sharing class factoryData {
 
     public static integer execute() 
     {
-        system.enqueueJob(new factoryData_asynchronous(1));
+        // system.enqueueJob(new factoryData_asynchronous(1));
         return 0;
     }
 
