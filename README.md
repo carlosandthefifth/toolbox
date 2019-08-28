@@ -11,3 +11,9 @@ git pull
 git reset --hard origin/master  
 git pull
 git branch --set-upstream-to=origin/master master
+
+# to pull a new remote branch
+git reset --hard HEAD
+git fetch --all
+git reset --hard origin/your_branch
+
