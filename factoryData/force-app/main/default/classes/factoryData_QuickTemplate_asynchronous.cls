@@ -22,6 +22,46 @@
 
 */
 
+/*
+    TEMPLATE EXAMPLE
+        public class factoryData_QuickTemplate_OBJECTNAME_asynchronous implements Queueable{
+        Map<ObjectTypes,Integer> objectCount;
+
+        public void execute(QueueableContext Context) {
+            // How many records can we insert here
+            integer totalDMLRows = Limits.getLimitDmlRows();
+            // Environmental check
+            if (totalDMLRows <= 0 ) {
+                // If we get here, potentially something is wrong with the ORG
+                throw new factoryDataQuickTemplateException('Inside factoryData_QuickTemplate_Contacts_asynchronous. ' +
+                    'Total rows that can be inserted: ' + totalDMLRows);
+            }
+
+            if (objectCount.get(ObjectTypes.CONTACTS) > totalDMLRows) {
+                // If we get here, we asked for too many records
+                throw new factoryDataQuickTemplateException('Inside factoryData_QuickTemplate_Contacts_asynchronous. ' +
+                    'Total rows that can be insert is ' + totalDMLRows + ' we requested ' + 
+                    objectCount.get(ObjectTypes.CONTACTS));
+            }
+
+            List<Object> Objects = [SELECT id FROM ACCOUNT LIMIT :totalDMLRows]; // get as many recs as possible
+            List<Contact> Contacts = new List<Contact>();
+
+            Integer accountIndex=0;
+            for (integer i = 0; i < objectCount.get(ObjectTypes.CONTACTS); i++) {
+            }
+            insert Objects;
+            system.enqueueJob(new sendEmail(objectCount));
+        }
+
+        // Constructor
+        public factoryData_QuickTemplate_Contacts_asynchronous(Map<ObjectTypes,Integer> objectCount) {
+            this.objectCount = objectCount;
+        }         
+    }
+
+*/
+
 public class factoryData_QuickTemplate_asynchronous implements Queueable {
 
     enum ObjectTypes {ACCOUNTS, PERSONACCOUNTS, CONTACTS, OPPORTUNITIES, CASES, LEADS, PRODUCTS}
