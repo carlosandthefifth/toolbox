@@ -1,8 +1,9 @@
 <aura:component controller="objectNameGrabber">
-        <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
-        <aura:attribute name="objectNames" type="String[]"/>
-    <aura:iteration items="objectNames" var="aName">
-        
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="objectNames" type="String[]"/>
+    <aura:attribute name="test" type="string" />
+    <p>test: "{!v.test}"</p>
+    <aura:iteration items="{!v.objectNames}" var="aName">
+        <p>{!aName}</p>
     </aura:iteration>
-       
 </aura:component>	

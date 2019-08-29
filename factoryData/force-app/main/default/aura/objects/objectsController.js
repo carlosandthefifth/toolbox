@@ -3,7 +3,10 @@
         var action = component.get("c.getObjectNames");
 
         action.setCallback(this,function(response){
-            component.set("v.objectNames",response.getReturnValue());
+            var values = response.getReturnValue()
+            console.error("values: " + values);
+            component.set("v.objectNames", values);
         });
+        $A.enqueueAction(action);
     }
 })
