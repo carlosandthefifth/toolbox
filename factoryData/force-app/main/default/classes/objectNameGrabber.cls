@@ -1,55 +1,49 @@
 public class objectNameGrabber {
 
-    public static List<String> objectNameList {get;set;}
-
-
-    private static boolean isAvailable = true;
+    public static List<String> objectNameList = new List<String>();
+    // Seems related to: https://success.salesforce.com/issues_view?id=a1p3A00000031xjQAA
+    // List of unsupported objects.  These objects appear to be accessible through the API but from research it sounds like
+    // objects that were not supposed to be accessible were made accessible but because they are not really, we get errors 
+    // when trying to access the get getRecordTypeInfos() or any record field.  Trying to catch these errors is not possible 
+    // because the error generated is an internal salesforce error which occurs internally before the exception reaches the code.
+    // You cannot query the objects, but putting in a query checks results in 101 SOQL error.  The elegant way around this might be 
+    // to create queuable batches that run in their own Apex transaction and avoid this error, but the easy solution (and since this is 
+    // just a utility program) is to create an exception list like this:
+    private static List<String> unsupportedObjects = new List<String> {'ConferenceNumber','ExternalEventMapping','ExternalEventMappingShare',
+        'ExternalEvent'};
     private static boolean isSupported = true;
 
+    private static boolean isSupported (string objectName) {
+        // go through the exception list of objects
+        // most unsupported objects can be found listed on this article
+        // Unsupported Salesforce Objects and Fields in Analytics
+        // https://help.salesforce.com/articleView?id=bi_integrate_salesforce_extract_transformation_unsupported_objects_fields.htm&type=5
+        for (String unsupportedObject : unsupportedObjects) {
+            if (objectName == unsupportedObject) return false;
+        }
+        return true;
+    }
+
     @AuraEnabled
-    public static void getObjectNames(){
+    public static List<String> getObjectNames(){
         system.debug('inside getObjectNames');
         Map<String, Schema.SObjectType> Objects = Schema.getGlobalDescribe(); 
-        List<String> unsupportedObjects = new List<String> {'ConferenceNumber','ExternalEventMapping','ExternalEventMappingShare',
-        'ExternalEvent'};
+        
         for (String AObject : Objects.keySet()) {
-            isAvailable = true;
             Schema.SObjectType anObject = objects.get(AObject);
-            system.debug('anObject: ' + anObject);
-
-            
 
             Schema.DescribeSObjectResult describeObject = anObject.getDescribe();
-            if (!describeObject.accessible) continue;
-            isSupported = true;
-            for (String unsupportedObject: unsupportedObjects) {
-                if (describeObject.name == unsupportedObject) {
-                    isSupported = false;
-                    break;
-                }
-            }
-            if (!isSupported) continue;
-            system.debug('describeObject13: ' + describeObject.name);
-
-            List<RecordTypeInfo> infos = describeObject.getRecordTypeInfos();
-            
-            for(RecordTypeInfo info: describeObject.getRecordTypeInfos()) {
-                if (!info.available) {
-                    isAvailable = false;
-                    break;
-                }
-            }
-            if (!isAvailable) continue;
-            if (describeObject.getRecordTypeInfos().size() <= 0) continue;
+        
+            if (!describeObject.accessible) continue; // cannot access the object - skip
+            if (!isSupported(describeObject.name)) continue; // Unsupported object
             if(!describeObject.isCreateable()) continue;
-            if (describeObject.getRecordTypeInfos() == null) continue;
+
             if((describeObject.isCustom() == false) && (describeObject.getRecordTypeInfos().size()) > 0)
                 objectNameList.add(String.valueOf(anObject));  // type case schema.SObjectType to string
             else if (describeObject.isCustom()) 
                 objectNameList.add(String.valueOf(anObject));  // type case schema.SObjectType to string
         }      
-        objectNameList.sort();
+        objectNameList.sort(); // sort ascending 
+        return objectNameList;
     }
-
-
 }
