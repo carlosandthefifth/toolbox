@@ -2,8 +2,11 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:attribute name="objectNames" type="String[]"/>
     <aura:attribute name="test" type="string" />
-    <p>test: "{!v.test}"</p>
-    <aura:iteration items="{!v.objectNames}" var="aName">
+    <aura:iteration items="{!v.objectNames}" var="aName" end="6">
         <lightning:button variant="base" label="{!aName}" title="{!aName}" onclick="{!c.configureObject}"/>
     </aura:iteration>
+    <br/>
+    <aura:iteration items="{!v.objectNames}" var="aName" start="6" end="12">
+            <lightning:button variant="base" label="{!aName}" title="{!aName}" onclick="{!c.configureObject}"/>
+    </aura:iteration>   
 </aura:component>	
