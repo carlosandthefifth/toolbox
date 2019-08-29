@@ -1,12 +1,27 @@
 <aura:component controller="objectNameGrabber">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:attribute name="objectNames" type="String[]"/>
-    <aura:attribute name="test" type="string" />
-    <aura:iteration items="{!v.objectNames}" var="aName" end="6">
-        <lightning:button variant="base" label="{!aName}" title="{!aName}" onclick="{!c.configureObject}"/>
-    </aura:iteration>
-    <br/>
-    <aura:iteration items="{!v.objectNames}" var="aName" start="6" end="12">
-            <lightning:button variant="base" label="{!aName}" title="{!aName}" onclick="{!c.configureObject}"/>
-    </aura:iteration>   
+    <aura:attribute name="listSize" type="integer" />
+    <aura:attribute name="showIt" type="boolean" default="false"/>
+    <aura:attribute name="showLoading" type="boolean" default="true" />
+    <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />
+    
+    <aura:if isTrue="{!v.showLoading}">
+        <p>Finding Objects...Please Wait</p>
+    </aura:if>
+    <!---
+    <aura:if isTrue="{!not(v.showLoading)}">
+        <aura:if isTrue="{!not(v.showIt)}">
+            <aura:iteration items="{!v.objectNames}" var="aName" indexVar="index">
+                <lightning:button  variant="base" label="{!aName}" title="{!aName}" onclick="{!c.objectDetails}"/> Records: 100
+                <aura:if isTrue="{!(mod((index + 1),4)==0)}">
+                    <br/><br/>
+                </aura:if>
+            </aura:iteration>
+        </aura:if>
+        <aura:if isTrue="{!v.showIt}">
+            Account data
+        </aura:if>
+    </aura:if>
+-->
 </aura:component>	
