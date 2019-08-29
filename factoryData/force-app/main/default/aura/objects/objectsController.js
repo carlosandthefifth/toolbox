@@ -8,5 +8,11 @@
             component.set("v.objectNames", values);
         });
         $A.enqueueAction(action);
+    },
+
+    configureObject : function(component, event, helper) {
+        console.error("in here");
+        var objectButton = event.getSource().get("v.label");
+        alert(objectButton + " was pressed");
     }
 })

@@ -4,6 +4,6 @@
     <aura:attribute name="test" type="string" />
     <p>test: "{!v.test}"</p>
     <aura:iteration items="{!v.objectNames}" var="aName">
-        <p>{!aName}</p>
+        <lightning:button variant="base" label="{!aName}" title="{!aName}" onclick="{!c.configureObject}"/>
     </aura:iteration>
 </aura:component>	
