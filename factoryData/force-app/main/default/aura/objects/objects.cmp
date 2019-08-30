@@ -1,27 +1,42 @@
-<aura:component controller="objectNameGrabber">
+<aura:component controller="objectFinderController">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:attribute name="objectNames" type="String[]"/>
+    <aura:attribute name="buttonIndex" type="integer" />
+    <aura:attribute name="recordCount" type="string" />
     <aura:attribute name="listSize" type="integer" />
     <aura:attribute name="showIt" type="boolean" default="false"/>
     <aura:attribute name="showLoading" type="boolean" default="true" />
+    <aura:attribute name="objectDetailName" type="string"/>
     <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />
     
     <aura:if isTrue="{!v.showLoading}">
-        <p>Finding Objects...Please Wait</p>
+        <center><b><p>Finding Objects...Please Wait</p></b></center>
     </aura:if>
-    <!---
+
     <aura:if isTrue="{!not(v.showLoading)}">
         <aura:if isTrue="{!not(v.showIt)}">
+            <p>Objects discovered...</p>
             <aura:iteration items="{!v.objectNames}" var="aName" indexVar="index">
-                <lightning:button  variant="base" label="{!aName}" title="{!aName}" onclick="{!c.objectDetails}"/> Records: 100
-                <aura:if isTrue="{!(mod((index + 1),4)==0)}">
+                <aura:if isTrue="{!(mod(index + 1,2)!=0)}">
+                    <lightning:button  variant="base" name="{!index}" label="{!aName}" title="{!aName}" onclick="{!c.getObjectDetail}"/> 
+                </aura:if>
+                <aura:if isTrue="{!(mod(index + 1,2)==0)}">
+                    Records: {!aName} 
+                </aura:if>
+                <aura:if isTrue="{!(mod((index + 1),10)==0)}">
                     <br/><br/>
                 </aura:if>
             </aura:iteration>
         </aura:if>
         <aura:if isTrue="{!v.showIt}">
-            Account data
+            {!v.objectDetailName}          
+            <table>
+                <tr>
+                   <td> Number of Records:</td><td> <lightning:input aura:id="recordInput" name="Records" value="{!v.recordCount}"/></td>
+                </tr>
+            </table>
+                <lightning:button  variant="base" name="{!v.buttonIndex}" label="Save" title="Save" onclick="{!c.save}"/> 
+                <lightning:button  variant="base" label="Cancel" title="Cancel" onclick="{!c.getObjectList}"/> 
         </aura:if>
     </aura:if>
--->
 </aura:component>	

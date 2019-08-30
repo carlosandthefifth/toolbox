@@ -1,28 +1,21 @@
 ({
-    doInit : function(component, event, helper) {
-        var action = component.get("c.getObjectNames");
-        action.setCallback(this,function(response){
-            var values = response.getReturnValue()
-            console.error("values: " + values);
-            component.set("v.objectNames", values);
-        });
-        $A.enqueueAction(action);
-        component.set('v.showLoading', false);
-        $A.get('e.force:refreshView').fire();
+    doInit : function(component, event, helper) { 
+        helper.init(component);
     },
 
-    configureObject : function(component, event, helper) {
-        console.error("in here");
-        var objectButton = event.getSource().get("v.label");
-        alert(objectButton + " was pressed");
+    getObjectDetail : function(component, event, helper) {
+        helper.getObjectDetail(component,event);
     },
 
-    objectDetails : function(component, event, helper) {
-        component.set("v.showIt", true);
-        $A.get('e.force:refreshView').fire();
+    getObjectList : function (component, event, helper) {
+        helper.getObjectList(component);
     },
 
     isRefreshed : function(component, event, helper) {
+        
+    },
 
+    save : function(component, event, helper) {
+        helper.save(component, event);
     }
 })
