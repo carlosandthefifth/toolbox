@@ -1,5 +1,7 @@
 <aura:component controller="objectFinderController">
 <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<aura:handler event="force:refreshView" action="{!c.isRefreshed}" />
+
 <aura:attribute name="objectNames" type="String[]"/>
 <aura:attribute name="buttonIndex" type="integer" />
 <aura:attribute name="recordCount" type="string" />
@@ -7,7 +9,8 @@
 <aura:attribute name="showIt" type="boolean" default="false"/>
 <aura:attribute name="showLoading" type="boolean" default="true" />
 <aura:attribute name="objectDetailName" type="string"/>
-<aura:handler event="force:refreshView" action="{!c.isRefreshed}" />
+<aura:attribute name="objectFields" type="map"/>
+
 
 <aura:if isTrue="{!v.showLoading}">
     <center><b><p>Finding Objects...Please Wait</p></b></center>
