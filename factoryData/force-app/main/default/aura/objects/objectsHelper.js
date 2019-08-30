@@ -1,5 +1,8 @@
 ({
     init : function(component) {
+        var spinner = component.find("spinner");
+        $A.util.toggleClass(spinner, "slds-hide");
+
         // connect to the server-sided controller
         var actionNames = component.get("c.getObjectNames");
         // We need to add additional information to be displayed
@@ -18,6 +21,7 @@
 
                 component.set("v.objectNames", transformedData); // set the view list
                 component.set("v.showLoading", false); // turn off show loading to show the view list
+                $A.util.toggleClass(spinner, "slds-hide");
                 $A.get('e.force:refreshView').fire(); // refresh the component
             } 
             else if (state === "INCOMPLETE") {
