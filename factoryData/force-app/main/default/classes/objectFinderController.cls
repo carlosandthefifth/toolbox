@@ -14,6 +14,9 @@ public with sharing class objectFinderController {
         'ExternalEvent'};
     private static boolean isSupported = true;
 
+    // fields for each object discovered
+    private static Map<String,List<String>> objectFields = new Map<String,List<String>>();
+
     private static boolean isSupported (string objectName) {
         // go through the exception list of objects
         // most unsupported objects can be found listed on this article
@@ -46,5 +49,23 @@ public with sharing class objectFinderController {
         }      
         objectNameList.sort(); // sort ascending 
         return objectNameList;
+    }
+
+    @AuraEnabled
+    public static Map<String,List<String>> returnMap(){
+        List <String> fields = new List <String> {'a','b','c','d'};
+        Map <String,List<String>> testMap = new Map<String,List<String>>();
+
+        testMap.put('koda',fields);
+        fields.clear();
+        fields.add('e');
+        fields.add('f');
+        fields.add('g');
+        fields.add('h');
+        fields.add('i');
+        fields.add('j');
+        testMap.put('Camis', fields);
+
+        return testMap;
     }
 }
