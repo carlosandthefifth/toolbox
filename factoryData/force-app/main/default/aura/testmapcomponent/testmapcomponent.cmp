@@ -1,0 +1,10 @@
+<aura:component controller="objectFinderController">
+    <aura:handler name="init" value="{!this}" action="{!c.getMap}"/>
+    <aura:attribute name="objectFields" type="String[]"/>
+    <aura:iteration items="{!v.objectFields}" var="obj" indexVar="key">
+        obj.key: {!obj.key}
+        <aura:iteration items="{!obj.value}" var="objvalue">
+            obj list value {!objvalue} <br/> <br/>
+        </aura:iteration>
+    </aura:iteration>
+</aura:component>	
