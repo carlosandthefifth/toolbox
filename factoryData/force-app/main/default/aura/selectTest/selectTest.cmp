@@ -1,0 +1,43 @@
+<aura:component controller="objectNames">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
+
+    <aura:attribute name="highlightedObject" type="string"/>
+    <aura:attribute name="recordsSelected" type="boolean" default="false"/>
+    <aura:attribute name="showRecordsSelected" type="boolean" default="false"/>
+    <aura:attribute name="selectedObject" type="string[]"/>
+    <aura:attribute name="recordCount" type="string[]"/>
+    <aura:attribute name="selectedOptions" type="string[]"/>
+    <aura:attribute name="objectRecords" type="string[]"/> 
+
+    <aura:attribute name="options" type="List"/>
+
+    <h3><b>Factory Data</b></h3>
+    <aura:if isTrue="{!not(v.showRecordsSelected)}">
+    <lightning:dualListbox aura:id="duallist"
+                           name="objects"  
+                           label= "Select objects" 
+                           sourceLabel="Available" 
+                           selectedLabel="Selected" 
+                           fieldLevelHelp="Select object for records that you want to create.  Double click on object to change record count."
+                           options="{!v.options}"
+                           onchange="{!c.onClick}"/>
+    </aura:if>                       
+    <aura:if isTrue="{!v.showRecordsSelected}">
+        <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
+            <aura:if isTrue="{!(mod((index),2)==0)}">
+                {!objectOrecord}
+            </aura:if>
+            <aura:if isTrue="{!(mod((index),2)!=0)}">
+                <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />
+            </aura:if>
+        </aura:iteration>
+        <lightning:button variant="Success" label="Save" title="Save" onclick="{!c.save}"/>
+        <lightning:button variant="Nuetral" label="Cancel" title="Cancel" onclick="{!c.save}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.recordsSelected}">
+        <aura:if isTrue="{!not(v.showRecordsSelected)}"> 
+            <lightning:button variant="Brand" label="Change Record Count" title="Check Record Count" onclick="{!c.changeRecordCount}"/>
+        </aura:if>    
+    </aura:if>
+</aura:component>
