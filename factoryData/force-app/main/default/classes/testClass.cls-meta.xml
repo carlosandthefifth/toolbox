@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ApexClass xmlns="urn:metadata.tooling.soap.sforce.com" fqn="VehicleImpl">
+<ApexClass xmlns="urn:metadata.tooling.soap.sforce.com" fqn="testClass">
     <apiVersion>46.0</apiVersion>
     <status>Active</status>
 </ApexClass>
