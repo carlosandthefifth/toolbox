@@ -52,20 +52,22 @@ public with sharing class objectFinderController {
     }
 
     @AuraEnabled
-    public static Map<String,List<String>> returnMap(){
-        List <String> fields = new List <String> {'a','b','c','d'};
-        Map <String,List<String>> testMap = new Map<String,List<String>>();
+    public static List<String> getFields(String objectName){
+        Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objectName);
+        sObject obj = targetType.newSObject();
+        system.debug('obj: ' + obj);
+        
+      //  Schema.SObjectType anObject = objects.get(objectName);
 
-        testMap.put('koda',fields);
-        fields.clear();
-        fields.add('e');
-        fields.add('f');
-        fields.add('g');
-        fields.add('h');
-        fields.add('i');
-        fields.add('j');
-        testMap.put('Camis', fields);
+        Schema.DescribeSObjectResult describeObject = targetType.getDescribe();
 
-        return testMap;
+        Map<String, Schema.SObjectField> finalMap = describeObject.fields.getMap();
+        List<String> fields = new List<String>();
+
+        for(String field : finalMap.keySet()) {
+            if ((finalMap.get(field).getDescribe().accessible) && (finalMap.get(field).getDescribe().updateable))
+                fields.add(String.valueOf(finalMap.get(field)));
+        }        
+        return fields;
     }
 }

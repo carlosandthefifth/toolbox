@@ -35,14 +35,34 @@
 
     getObjectDetail: function(component,event) {
         // which button was clicked 
-        var whichOne = event.getSource().get("v.name");
-
         var strArry = component.get("v.objectNames");
-        component.set("v.buttonIndex", whichOne + 1);
-        component.set("v.showIt",true);
-        component.set("v.objectDetailName", event.getSource().get("v.label"));
-        component.set("v.recordCount", strArry[whichOne + 1]);
-        $A.get('e.force:refreshView').fire();
+        var whichOne = event.getSource().get("v.name");
+        var objectName = strArry[whichOne];
+        console.info("objectName: " + objectName);
+        var actionFields = component.get("c.getFields");
+        actionFields.setParams({objectName : objectName});
+
+        actionFields.setCallback(this, function(response){
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                console.log("response.getReturnValue(): " + response.getReturnValue());
+                var values =  response.getReturnValue();
+                var transformedData = [];
+                for (var i = 0; i < values.length; i++) {
+                    transformedData.push(values[i]);
+                    console.info("values[" + i + "]: " + values[i]);
+                }
+                component.set("v.fields", transformedData);
+
+                component.set("v.buttonIndex", whichOne + 1);
+                component.set("v.showIt",true);
+                component.set("v.objectDetailName", event.getSource().get("v.label"));
+                component.set("v.recordCount", strArry[whichOne + 1]);
+                $A.get('e.force:refreshView').fire();
+        
+            }
+        });
+        $A.enqueueAction(actionFields);    
     },
 
     getObjectList: function(component) {

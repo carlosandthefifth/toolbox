@@ -3,6 +3,7 @@
 <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />
 
 <aura:attribute name="objectNames" type="String[]"/>
+<aura:attribute name="fields" type="String[]"/>
 <aura:attribute name="buttonIndex" type="integer" />
 <aura:attribute name="recordCount" type="string" />
 <aura:attribute name="listSize" type="integer" />
@@ -29,6 +30,7 @@
             </aura:if>
             <aura:if isTrue="{!(mod(index + 1,2)==0)}">
                 <lightning:layoutItem size="1">
+                <lightning:input aura:id="createRecords" type="checkBox" label="Create Records" value="{!aName}"/>
                 Records: {!aName} 
                 </lightning:layoutItem>
             </aura:if>
@@ -64,11 +66,11 @@
 
                 </div>
                 <div class="slds-col slds-size_2-of-12">
-
+                
                 </div>
                 <div class="slds-p-horizontal_xx-small">
                         <!--small space-->
-                </div>
+                </div>    
                 <div class="slds-col slds-grow-none">
                     <lightning:button  variant="success" name="{!v.buttonIndex}" label="Save" title="Save" onclick="{!c.save}"/> 
                 </div>
@@ -86,8 +88,13 @@
                 </div>
                 <div class="slds-col slds-align-middle">
                     <lightning:button  variant="Neutral" label="Cancel" title="Cancel" onclick="{!c.getObjectList}"/> 
-                </div>
+                </div>    
             </div>
+        <div>
+            <aura:iteration items="{!v.fields}" var="aField">
+                Field: {!aField} <lightning:input aura:id="recordInput" name="{!aField}" value="{!v.recordCount}"/> <br/><br/>
+            </aura:iteration>     
+        </div>
 
     </aura:if>
 </aura:if>
