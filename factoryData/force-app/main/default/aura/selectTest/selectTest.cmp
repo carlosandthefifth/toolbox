@@ -8,19 +8,18 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <!--for forced refresh-->
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
+    <aura:attribute name="debugModeOn" type="boolean" default="false"/>
 
-    <!--<aura:attribute name="highlightedObject" type="string"/>-->
     <aura:attribute name="showChangeRecordButton" type="boolean" default="false"/>
     <aura:attribute name="showEditRecordCount" type="boolean" default="false"/>
- <!--   <aura:attribute name="selectedObject" type="string[]"/>-->
-  <!--  <aura:attribute name="recordCount" type="string[]"/>-->
     <aura:attribute name="selectedOptions" type="string[]"/>
     <aura:attribute name="objectRecords" type="string[]"/> 
     <!--Attribute not used in this component but in the helper for to facilitate data manipulation-->
     <aura:attribute name="optionMap" type="Map"/>
     <aura:attribute name="options" type="List"/>
 
-    <h3><b>Factory Data</b></h3>
+    <H3><b>Factory Data</b></H3>
+
     <aura:if isTrue="{!not(v.showEditRecordCount)}">
     <lightning:dualListbox aura:id="duallist"
                            name="objects"  
@@ -30,7 +29,7 @@
                            fieldLevelHelp="Select object for records that you want to create.  Double click on object to change record count."
                            options="{!v.options}"
                            value="{!v.selectedOptions}"
-                           onchange="{!c.onClick}"/>
+                           onchange="{!c.onSelection}"/>
     </aura:if>                       
 
     <!--Use this div to trundle through the list of Lightning:Input components-->
@@ -38,23 +37,24 @@
     <aura:if isTrue="{!v.showEditRecordCount}">
         <H1><b>Objects and Record Count</b></H1>
         <lightning:layout>
-                <div class="slds-grid slds-wrap">
-        <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
+            <div class="slds-grid slds-wrap">
+                <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
                 
-            <aura:if isTrue="{!(mod((index),2)==0)}">
-                <div class="slds-col slds-align-bottom slds-size_1-of-12">
-                    <b>{!objectOrecord}</b>
-                </div>
-            </aura:if>
-            <aura:if isTrue="{!(mod((index),2)!=0)}">
-                    <div class="slds-col slds-size_1-of-12">
-                    <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />      
-                    </div>
-                    <div class="slds-col slds-size_12-of-12 ">
-                    </div>
-                </aura:if>
-        </aura:iteration>
-        </div>
+                    <aura:if isTrue="{!(mod((index),2)==0)}">
+                        <div class="slds-col slds-align-bottom slds-size_1-of-12">
+                            <b>{!objectOrecord}</b>
+                        </div>
+                    </aura:if>
+
+                    <aura:if isTrue="{!(mod((index),2)!=0)}">
+                        <div class="slds-col slds-size_1-of-12">
+                            <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />      
+                        </div>
+                        <div class="slds-col slds-size_12-of-12 ">
+                        </div>
+                    </aura:if>
+                </aura:iteration>
+            </div>
         </lightning:layout>
         <lightning:button variant="Success" label="Save" title="Save" onclick="{!c.save}"/>
         <lightning:button variant="Nuetral" label="Cancel" title="Cancel" onclick="{!c.save}"/>
