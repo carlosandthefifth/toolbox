@@ -1,3 +1,9 @@
+<!--
+        PROGRAMMER: DANIEL GUSTAFSON 
+        DATE:       September 3, 2019
+
+        Interface for factory data.  Allow selection of multiple objects 
+-->
 <aura:component controller="objectNames">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <!--for forced refresh-->
@@ -27,30 +33,28 @@
                            onchange="{!c.onClick}"/>
     </aura:if>                       
 
+    <!--Use this div to trundle through the list of Lightning:Input components-->
     <div aura:id="myDiv">
     <aura:if isTrue="{!v.showEditRecordCount}">
+        <H1><b>Objects and Record Count</b></H1>
         <lightning:layout>
+                <div class="slds-grid slds-wrap">
         <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
-            <div class="slds-grid slds-gutters">
+                
             <aura:if isTrue="{!(mod((index),2)==0)}">
-                <div class="slds-col slds-align-bottom slds-size_3-of-12">
-                <b>{!objectOrecord}</b>
-                </div>
-                <div class="slds-p-horizontal_xx-small">
-                        <!--small space-->
+                <div class="slds-col slds-align-bottom slds-size_1-of-12">
+                    <b>{!objectOrecord}</b>
                 </div>
             </aura:if>
             <aura:if isTrue="{!(mod((index),2)!=0)}">
-                <div class="slds-col slds-size_6-of-12">
-                <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />
-                </div>
-                <div class="slds-col slds-size_12-of-12">
-
-                </div>
-            </aura:if>
-            </div>
-            <br/><br/>
+                    <div class="slds-col slds-size_1-of-12">
+                    <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />      
+                    </div>
+                    <div class="slds-col slds-size_12-of-12 ">
+                    </div>
+                </aura:if>
         </aura:iteration>
+        </div>
         </lightning:layout>
         <lightning:button variant="Success" label="Save" title="Save" onclick="{!c.save}"/>
         <lightning:button variant="Nuetral" label="Cancel" title="Cancel" onclick="{!c.save}"/>
@@ -59,6 +63,7 @@
     <aura:if isTrue="{!v.showChangeRecordButton}">
         <aura:if isTrue="{!not(v.showEditRecordCount)}"> 
             <lightning:button variant="Brand" label="Change Record Count" title="Check Record Count" onclick="{!c.changeRecordCount}"/>
+            <lightning:button variant="Destructive" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
         </aura:if>    
     </aura:if>
 </aura:component>

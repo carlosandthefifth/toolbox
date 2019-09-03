@@ -47,6 +47,10 @@
         component.set("v.objectRecords", strArray);
     },
 
+    createData: function(component, event, helper) {
+
+    },
+    
     doRefresh: function(component, event, helper) {
 
     },
