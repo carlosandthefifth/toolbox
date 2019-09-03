@@ -8,12 +8,15 @@
             if (state === "SUCCESS") {
                 console.error("response.getReturnValue(): " +  response.getReturnValue());
                 var returnValues = response.getReturnValue();
+                component.set("v.optionMap", returnValues);
+                console.log("returnValues: " + returnValues);
                 var optionValues = [];
-                for (var i = 0; i < returnValues.length; i++) {
-                    optionValues.push({value: returnValues[i], label: returnValues[i]});
+                for (var singlekey in returnValues) {
+                    optionValues.push({label: singlekey + ":" + returnValues[singlekey], value: singlekey});
                 }
+                console.log("optionValues: " + optionValues);
                 component.set("v.options", optionValues);
-            
+                
             }
         });
         $A.enqueueAction(action);
@@ -24,17 +27,24 @@
     },
 
     changeRecordCount: function(component, event, helper) {
-        component.set("v.showRecordsSelected", true);
+        component.set("v.showEditRecordCount", true);
         var selectedOptions = component.get("v.selectedOptions");
-        for (var i = 0; i < selectedOptions.length; i++) {
-            console.error(":selectedOptionsList[i].split(:) " + selectedOptions[i].split(":"));
-            var splitter = selectedOptions[i].split(":");
-            console.error("splitter: " + splitter);
+        console.warn("options2: " + selectedOptions);
+
+        var mapSelection = component.get("v.optionMap");
+        console.error("mapSelection: " + JSON.stringify(mapSelection));
+        var strArray = [];
+        for (var i = 0 ; i < selectedOptions.length; i++) {
+            console.log("selectedOptions[i]: " + selectedOptions[i]);
+            strArray.push(selectedOptions[i]);
+            strArray.push(mapSelection[selectedOptions[i]]);
         }
 
-        console.error("splitter1: " + splitter[0]);
-        console.error("splitter2: " + splitter[1]);
-        component.set("v.objectRecords",splitter);
+        for (var i = 0; i < strArray.length; i++) {
+            console.log("&&& strArray: " + strArray[i]);
+        }
+        console.log("StrArray: " + strArray);
+        component.set("v.objectRecords", strArray);
     },
 
     doRefresh: function(component, event, helper) {
@@ -42,29 +52,35 @@
     },
 
     save: function(component, event, helper) {
-        var nameIs = event.getSource().get("v.name");
- //       console.error("nameIs: " + nameIs);
-        nameIs = event.getSource().get("v.value");
-   //     console.error("valueIs: " + nameIs);
-        nameIs = event.getSource().get("v.label");
-        console.error("labelIs: " + nameIs);
+        var myInputs = component.find("myDiv").find({instancesOf : "lightning:input"});
+        alert("There are " + myInputs.length + " lightning:input elements within myDiv.");
 
+        var optionsSelected = component.get('v.selectedOptions');
+        var optionMap = component.get("v.optionMap");
+        for(var i = 0; i < myInputs.length; i++) {
+            console.log("i: " + i);
+            console.log("------> aura element in array value @ index " + i + " = " + myInputs[i].get("v.value"));
+            console.log("------> aura element in array name @ index " + i + " = " + myInputs[i].get("v.name"));
+            console.log("optionsSelected[" + i + "]: " + optionsSelected[i]);
+            console.log("optionMap[optionsSelected[i]]: " + optionMap[optionsSelected[i]]);
+            optionMap[optionsSelected[i]] = myInputs[i].get("v.value");
+        }
+        
+        
 
-        var editor = component.find("recordInput").get("v.name");
-        console.error("editor: " + editor);
-        var value = component.find("recordInput").get("v.value");
-        console.error("value is: " + value);
-        value = component.find("recordInput").get("v.name");
-        console.error("name is: " + value);
         
-        var number = integer.valueof(value);
-        console.error("number: " + number);
-        var options = component.get("v.selectedOptions");
-        console.error("options: " + options);
-        var split = options[integer.valueof(value) - 1].split(":");
-        console.error("split: " + split);
-        
+        console.log("optionMap: " + JSON.stringify(optionMap));
+        var optionValues = [];
+        for (var singlekey in optionMap) {
+            optionValues.push({label: singlekey + ":" + optionMap[singlekey], value: singlekey});
+        }
+        console.log("optionValues: " + optionValues);
+        component.set("v.options", optionValues);
+        component.set("v.showEditRecordCount",false);
+        $A.get("e.force:refreshView").fire();
     },
+    
+
 
     onClick: function(component, event, helper) {
         var whodis = event.getSource().getLocalId();
@@ -74,9 +90,9 @@
         console.info("selectedOptionsList: " + selectedOptionsList);
         console.info("selectedOptionsList.length: " + selectedOptionsList.length);
         if ((selectedOptionsList.length > 0))
-            component.set("v.recordsSelected", true)
+            component.set("v.showChangeRecordButton", true)
         else    
-            component.set("v.recordsSelected", false)
+            component.set("v.showChangeRecordButton", false)
         $A.get("e.force:refreshView").fire();
     }
 });
