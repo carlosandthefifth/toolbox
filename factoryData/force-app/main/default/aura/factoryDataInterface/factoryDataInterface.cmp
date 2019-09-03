@@ -8,7 +8,7 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <!--for forced refresh-->
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
-    <aura:attribute name="debugModeOn" type="boolean" default="true"/>
+    <aura:attribute name="debugModeOn" type="boolean" default="false"/>
 
     <aura:attribute name="showLoading" type="boolean" default="true"/>
     <aura:attribute name="showChangeRecordButton" type="boolean" default="false"/>
