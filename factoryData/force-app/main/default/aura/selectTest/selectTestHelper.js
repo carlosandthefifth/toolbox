@@ -1,5 +1,5 @@
 ({
-    doInit: function (component, event) {
+    doInit: function (component, event, helper) {
         console.info("inside doinit");
         var action = component.get("c.discoverObjects");
 
@@ -14,7 +14,7 @@
                 }
                 component.set("v.options", optionValues);
 
-                
+
                 // Are we in debug mode    
                 var debugMode = component.get("v.debugModeOn");
                 if (debugMode) // output to console
@@ -70,7 +70,7 @@
 
     },
 
-    save: function(component, event) {
+    save: function(component, event, helper) {
         // Get the number of instances of Lighting:Inputs in this div
         var myInputs = component.find("myDiv").find({instancesOf : "lightning:input"});
         var optionsSelected = component.get('v.selectedOptions'); // Get the objects and new record count
@@ -93,7 +93,7 @@
         $A.get("e.force:refreshView").fire();
 
         if (debugMode) // output to console
-        helper.debug_save(myInputs,optionsSelected,optionMap,optionValues);
+            helper.debug_save(myInputs,optionsSelected,optionMap,optionValues);
     },
     
     debug_save: function(myInputs,optionsSelected,optionMap,optionValues) {
