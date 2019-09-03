@@ -29,8 +29,9 @@ public with sharing class objectFinderController {
     }
 
     @AuraEnabled
-    public static List<String> getObjectNames(){
+    public static Map<String,Integer> getObjectNames(){
         system.debug('inside getObjectNames');
+        Map<String,Integer> objectRecords = new Map<String,Integer>();
         Map<String, Schema.SObjectType> Objects = Schema.getGlobalDescribe(); 
         
         for (String AObject : Objects.keySet()) {
@@ -48,7 +49,10 @@ public with sharing class objectFinderController {
                 objectNameList.add(String.valueOf(anObject));  // type case schema.SObjectType to string
         }      
         objectNameList.sort(); // sort ascending 
-        return objectNameList;
+        for (integer i = 0; i < objectNameList.size(); i++) {
+            objectRecords.put(objectNameList[i], 10);
+        }
+        return objectRecords;
     }
 
     @AuraEnabled

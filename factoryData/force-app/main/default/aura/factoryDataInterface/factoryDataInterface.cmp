@@ -4,12 +4,13 @@
 
         Interface for factory data.  Allow selection of multiple objects 
 -->
-<aura:component controller="objectNames">
+<aura:component controller="objectFinderController">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <!--for forced refresh-->
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
-    <aura:attribute name="debugModeOn" type="boolean" default="false"/>
+    <aura:attribute name="debugModeOn" type="boolean" default="true"/>
 
+    <aura:attribute name="showLoading" type="boolean" default="true"/>
     <aura:attribute name="showChangeRecordButton" type="boolean" default="false"/>
     <aura:attribute name="showEditRecordCount" type="boolean" default="false"/>
     <aura:attribute name="selectedOptions" type="string[]"/>
@@ -20,6 +21,12 @@
 
     <H3><b>Factory Data</b></H3>
 
+    <aura:if isTrue="{!v.showLoading}">
+        <center><b><p>Finding Objects...Please Wait</p></b></center>
+        <lightning:spinner aura:id="spinner"  variant="brand" size="large"/>
+    </aura:if>
+
+    <aura:if isTrue="{!not(v.showLoading)}">
     <aura:if isTrue="{!not(v.showEditRecordCount)}">
     <lightning:dualListbox aura:id="duallist"
                            name="objects"  
@@ -41,7 +48,7 @@
                 <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
                 
                     <aura:if isTrue="{!(mod((index),2)==0)}">
-                        <div class="slds-col slds-align-bottom slds-size_1-of-12">
+                        <div class="slds-col slds-align-bottom slds-size_5-of-12">
                             <b>{!objectOrecord}</b>
                         </div>
                     </aura:if>
@@ -66,4 +73,5 @@
             <lightning:button variant="Destructive" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
         </aura:if>    
     </aura:if>
+</aura:if> <!--showloading-->
 </aura:component>

@@ -1,7 +1,9 @@
 ({
     doInit: function (component, event, helper) {
         console.info("inside doinit");
-        var action = component.get("c.discoverObjects");
+        var action = component.get("c.getObjectNames");
+        var spinner = component.find("spinner");
+        $A.util.toggleClass(spinner, "slds-hide"); // show it
 
         action.setCallback(this,function(response){
             var state = response.getState();
@@ -13,8 +15,8 @@
                     optionValues.push({label: singlekey + ":" + returnValues[singlekey], value: singlekey});
                 }
                 component.set("v.options", optionValues);
-
-
+                $A.util.toggleClass(spinner, "slds-hide");
+                component.set("v.showLoading", false);
                 // Are we in debug mode    
                 var debugMode = component.get("v.debugModeOn");
                 if (debugMode) // output to console
