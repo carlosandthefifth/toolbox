@@ -15,7 +15,7 @@
     <aura:attribute name="showEditRecordCount" type="boolean" default="false"/>
     <aura:attribute name="selectedOptions" type="string[]"/>
     <aura:attribute name="objectRecords" type="string[]"/> 
-    <!--Attribute not used in this component but in the helper for to facilitate data manipulation-->
+    <!--Attribute not used in this component but in the helper for to facilitate data manipulation -->
     <aura:attribute name="optionMap" type="Map"/>
     <aura:attribute name="options" type="List"/>
 
