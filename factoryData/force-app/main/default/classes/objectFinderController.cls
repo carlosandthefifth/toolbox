@@ -77,7 +77,8 @@ public with sharing class objectFinderController {
 
     public static void getFields(String objectName)
     /*
-        Used to find related objects
+        Used to find related objects 
+        
     */
     {
 
