@@ -76,6 +76,9 @@ public with sharing class objectFinderController {
     }
 
     public static void getFields(String objectName)
+    /*
+        Used to find related objects
+    */
     {
 
         Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objectName);
