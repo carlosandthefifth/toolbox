@@ -77,7 +77,7 @@
 
         action.setCallback(this, function(response) {
             var state = response.getState()
-            alert("Recrrds created");
+            alert("Records created");
 
         });
         $A.enqueueAction(action);
