@@ -55,6 +55,7 @@ public with sharing class objectFinderController {
         return objectRecords;
     }
 
+/*
     @AuraEnabled
     public static List<String> getFields(String objectName){
         Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objectName);
@@ -74,6 +75,7 @@ public with sharing class objectFinderController {
         }        
         return fields;
     }
+    */
 
     public static void getFields(String objectName)
     /*
@@ -152,6 +154,35 @@ public with sharing class objectFinderController {
             system.debug('57' + finalmap.get(field).getDescribe().updateable);          
         }
         
+    }
+
+    @AuraEnabled
+    public static void createRecords(String objectName, Integer count) {
+        system.debug('objectName: '  + objectName);
+        //Casting String to sObject
+        SObject obj;
+        Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+
+        Map <String, Schema.SObjectField> fieldMap = schemaMap.get(objectName).getDescribe().fields.getMap();
+        
+        
+        //  Map<String, Schema.SObjectField> finalMap = obj.fields.getMap();
+
+        try {
+            List<SObject> objects = new List<SObject>();
+            if ((fieldMap.get('name').getdescribe().updateable) && (fieldMap.get('name').getdescribe().accessible))
+            {
+                for (integer i = 0; i < count; i++) {
+                    obj = Schema.getGlobalDescribe().get(objectName).newSObject();
+                    obj.put('Name', 'Test ' + i);
+                    objects.add(obj);
+                    system.debug('objects: ' + objects);
+                }
+            }
+            insert objects;
+        } catch (Exception e) {
+            system.debug('message: ' + e.getMessage());
+        }
     }
     
 }

@@ -12,7 +12,7 @@
     },
 
     createData: function(component, event, helper) {
-
+        helper.createData(component, event, helper);
     },
 
     doRefresh: function(component, event, helper) {
@@ -23,7 +23,9 @@
         helper.save(component,event, helper);
     },
     
-
+    showToast: function(component, event, helper) {
+        helper.showToast(component, event, helper);
+    },
 
     onSelection: function(component, event, helper) {
         helper.onSelection(component,event,helper);

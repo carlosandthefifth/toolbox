@@ -64,8 +64,23 @@
         console.log("StrArray: " + strArray);
     },
 
-    createData: function(component, event) {
+    createData: function(component, event, helper) {
+        var objects = component.get("v.selectedOptions");
+        var objectMap = component.get("v.optionMap");
 
+        console.log("objects: " + objects);
+        console.log("objects[0]: " + objects[0]);
+        console.log("objectMap[objects[0]]: " + objectMap[objects[0]]);
+        var action = component.get("c.createRecords");
+
+        action.setParams({objectName: objects[0], count : objectMap[objects[0]]});
+
+        action.setCallback(this, function(response) {
+            var state = response.getState()
+            alert("Recrrds created");
+
+        });
+        $A.enqueueAction(action);
     },
     
     doRefresh: function(component, event) {
