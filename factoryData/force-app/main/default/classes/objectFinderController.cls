@@ -77,6 +77,13 @@ public with sharing class objectFinderController {
     }
     */
 
+/*
+    private static boolean fieldIsRequired(String fieldName) {
+        Schema.SObjectField checkField;
+
+        return checkField.get(fieldName).getDescribe().nillable;
+    }
+*/
     public static void getFields(String objectName)
     /*
         Used to find related objects 
@@ -156,6 +163,27 @@ public with sharing class objectFinderController {
         
     }
 
+    private static List<Sobject> queryParentRecords (String objectName)
+    {
+        integer queryLimit = system.Limits.getLimitQueryLocatorRows();
+        String queryStr = 'SELECT ID FROM ' + objectName + ' LIMIT ' + queryLimit;
+        system.debug('queryStr ' + queryStr);
+        return Database.query(queryStr);
+    }
+
+    private static boolean requiredExceptionList(String objectName, String fieldName)
+    {
+        if (fieldName == 'ownerid') return true;
+        if (fieldName == 'isprivate') return true;
+        if (fieldName == 'ownerid') return true;
+        if (fieldName == 'createdbyid') return true;
+        if (fieldName == 'lastmodifiedbyid') return true;
+        if (fieldName == null) return true;
+        if (fieldName == objectName) return true;
+
+        return false;
+    }
+
     @AuraEnabled
     public static void createRecords(String objectName, Integer count) {
         system.debug('objectName: '  + objectName);
@@ -165,20 +193,118 @@ public with sharing class objectFinderController {
 
         Map <String, Schema.SObjectField> fieldMap = schemaMap.get(objectName).getDescribe().fields.getMap();
         
-        
-        //  Map<String, Schema.SObjectField> finalMap = obj.fields.getMap();
+        Map<String, List<SObject>> parentRecords = new Map<String,List<SObject>>();
 
-        try {
-            List<SObject> objects = new List<SObject>();
-            if ((fieldMap.get('name').getdescribe().updateable) && (fieldMap.get('name').getdescribe().accessible))
-            {
-                for (integer i = 0; i < count; i++) {
-                    obj = Schema.getGlobalDescribe().get(objectName).newSObject();
-                    obj.put('Name', 'Test ' + i);
-                    objects.add(obj);
-                    system.debug('objects: ' + objects);
+        List<String> requiredFields = new List<String>();
+
+        for (String field : fieldMap.keySet()){
+            string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
+            if (fieldType == 'REFERENCE') {
+                system.debug('finalmap.get(field).getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
+                system.debug('field: ' + field);
+                system.debug('string.valueOf(fieldMap.get(field).getDescribe().type: ' + fieldType);
+                if (!requiredExceptionList(objectName, field)) {
+                    system.debug('fieldMap.get(' + field + ').getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
+                    if (fieldMap.get(field).getDescribe().referenceto != null) {
+                        string objectNameStr = string.valueOf(fieldMap.get(field).getDescribe().referenceto);
+                        objectNameStr = objectNameStr.remove('(');
+                        objectNameStr = objectNameStr.remove(')');
+                        system.debug('objectNameStr: ' + objectNameStr);
+
+                        parentRecords.put(field,queryParentRecords(objectNameStr));
+                    }
+                    system.debug('parentRecords.get(' + field  + ')' + parentRecords.get(field));
                 }
             }
+            if(!(fieldMap.get(field).getDescribe().nillable) && (fieldMap.get(field).getDescribe().updateable) && 
+                !requiredExceptionList(objectName, field)) 
+                system.debug('skipping: ' + objectName);
+                requiredFields.add(field);
+        }
+        //  Map<String, Schema.SObjectField> finalMap = obj.fields.getMap();
+        for (String field : requiredFields) {
+            system.debug('field: ' + field);
+            system.debug('type: ' + fieldMap.get(field).getDescribe().type);
+        }
+        try {
+            List<SObject> objects = new List<SObject>();
+            integer relationshipRecordCount = 0;
+            for (integer i = 0; i < count; i++) {
+                obj = Schema.getGlobalDescribe().get(objectName).newSObject();
+  //              obj.put('Name', 'Test ' + i);
+                if (requiredFields.size() >0 ) {
+                    for (String field : requiredFields) {
+                        if(!fieldMap.get(field).getDescribe().updateable) continue;
+                        if(requiredExceptionList(objectName,field)) continue;
+
+                        system.debug('field: ' + field);
+                        string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
+                        system.debug('fieldType: ' + fieldType);
+                        if (fieldType == 'CURRENCY' ) {
+                            obj.put(field, 1000000);
+                        } else
+                        if (fieldType == 'DATE' ) {
+                            system.debug('1.a');
+                            DATE dt = system.today().addDays(30);
+                            system.debug('field: ' + string.valueOf(field));
+                            system.debug('system.today().addDays(30): ' + dt.format());
+                            system.debug('dt: ' + dt);
+                            obj.put(field, dt);
+                            system.debug('2.a');
+                        } else
+                        if (fieldType == 'DATETIME' ) {
+                            system.debug('1.E');
+                            DATE dt = system.today().addDays(30);
+                            system.debug('field: ' + string.valueOf(field));
+                            system.debug('system.today().addDays(30): ' + dt.format());
+                            system.debug('dt: ' + dt);
+                            obj.put(field, dt);
+                            system.debug('2.E');
+                        } else
+                        if (fieldType == 'DOUBLE') {
+                            // do nothing
+                        } else
+                        if (fieldType == 'EMAIL') {
+                            obj.put(field,''); // add blank
+                        } else
+                        if (fieldType == 'REFERENCE') {
+                            if (parentRecords.get(field).size() <= 0) continue;
+
+                            system.debug('*** adding reference ***');
+                            system.debug('1.b');
+                            system.debug('relationshipRecordCount: ' + relationshipRecordCount);
+
+                            system.debug('parentRecords.get(field)[relationshipRecordCount]: ' + parentRecords.get(field)[relationshipRecordCount].id);
+                            system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size()); 
+                            obj.put(field, parentRecords.get(field)[relationshipRecordCount].Id);        
+                            if (relationshipRecordCount >= parentRecords.get(field).size()) relationshipRecordCount = 0;
+                            system.debug('2.b');
+                        } else
+                        if (fieldType == 'PICKLIST') {
+                            system.debug('1.c');                                    
+                            List<Schema.PicklistEntry> entries = fieldMap.get(field).getDescribe().getPicklistValues();
+                            for (Schema.PicklistEntry entry : entries) {
+                                system.debug('entry: ' + entry);
+                            }
+                            system.debug('entries.get(0): ' + entries.get(0).getValue());
+                            obj.put(field, entries.get(0).getValue());
+                            system.debug('2.c');
+                        } else if (fieldType == 'PERCENT') {
+                            // Do nothing
+                        } else {
+                            system.debug('1.d');
+                            system.debug('field: ' + field);
+                            system.debug('fieldType: ' + fieldType);
+                            obj.put(field, 'test ' + i);
+                            system.debug('2.d');
+                        }
+                    }
+                }
+                system.debug('objects: ' + objects);
+                objects.add(obj);
+                system.debug('after add obj');
+            }
+
             insert objects;
         } catch (Exception e) {
             system.debug('message: ' + e.getMessage());
