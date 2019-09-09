@@ -270,6 +270,9 @@ public with sharing class objectFinderController {
                         if (fieldType == 'DOUBLE') {
                             // do nothing
                         } else
+                        if (fieldType == 'INTEGER') {
+                            obj.put(field, 10);
+                        } else
                         if (fieldType == 'EMAIL') {
                             obj.put(field,''); // add blank
                         } else
@@ -304,11 +307,19 @@ public with sharing class objectFinderController {
                             system.debug('2.c');
                         } else if (fieldType == 'PERCENT') {
                             // Do nothing
+                        } else if (fieldType == 'TEXTAREA') {
+                            // Do nothing
                         } else {
                             system.debug('1.d');
                             system.debug('field: ' + field);
                             system.debug('fieldType: ' + fieldType);
-                            obj.put(field, 'test ' + i);
+                            string value = 'test ' + i;
+                            system.debug('field.length(): ' + fieldMap.get(field).getDescribe().getLength());
+                            system.debug('value.length(): ' + value.length());
+                            if (fieldMap.get(field).getDescribe().getLength() < value.length())
+                                value = value.substring(fieldMap.get(field).getDescribe().getLength());
+                            system.debug('value: ' + value);
+                            obj.put(field, value);
                             system.debug('2.d');
                         }
                     }

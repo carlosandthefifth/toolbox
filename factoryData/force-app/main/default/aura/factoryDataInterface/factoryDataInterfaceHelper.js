@@ -67,20 +67,35 @@
     createData: function(component, event, helper) {
         var objects = component.get("v.selectedOptions");
         var objectMap = component.get("v.optionMap");
-
+        var objectMapLength = objects.length;
+        console.log("objectMapLength: " + objectMapLength);
+        var firstPass = true;
+        var i = 0;
         console.log("objects: " + objects);
-        console.log("objects[0]: " + objects[0]);
-        console.log("objectMap[objects[0]]: " + objectMap[objects[0]]);
+        console.log("objects[0]: " + objects[i]);
+        console.log("objectMap[objects[0]]: " + objectMap[objects[i]]);
         var action = component.get("c.createRecords");
 
-        action.setParams({objectName: objects[0], count : objectMap[objects[0]]});
+        action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
 
         action.setCallback(this, function(response) {
             var state = response.getState()
-            alert("Records created");
-
+            if (i == objectMapLength)
+                alert("Records created")
+            else {
+                i++
+                if (i == objectMapLength) {
+                    alert("Records created");
+                    return;
+                }
+                action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
+                $A.enqueueAction(action);
+            }
         });
-        $A.enqueueAction(action);
+        if (firstPass) {
+            $A.enqueueAction(action);
+            firstPass=false;
+        }
     },
     
     doRefresh: function(component, event) {
