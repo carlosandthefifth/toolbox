@@ -14,6 +14,8 @@ public with sharing class objectFinderController {
         'ExternalEvent'};
     private static boolean isSupported = true;
 
+    public class objectFinderException extends Exception {}
+
     // fields for each object discovered
     private static Map<String,List<String>> objectFields = new Map<String,List<String>>();
 
@@ -178,6 +180,7 @@ public with sharing class objectFinderController {
         if (fieldName == 'ownerid') return true;
         if (fieldName == 'createdbyid') return true;
         if (fieldName == 'lastmodifiedbyid') return true;
+        if (fieldName == 'isdeleted') return true;
         if (fieldName == null) return true;
         if (fieldName == objectName) return true;
 
@@ -213,16 +216,55 @@ public with sharing class objectFinderController {
                         objectNameStr = objectNameStr.remove(')');
                         system.debug('objectNameStr: ' + objectNameStr);
                         system.debug('getting: ' + queryParentRecords(objectNameStr));
+                        system.debug('field: ' + field);
                         parentRecords.put(field,queryParentRecords(objectNameStr));
                         parentCounts.put(field,0);
                     }
+                    system.debug('field: ' + field);
+                    system.debug('parentCounts.get(' + field + '): ' + parentCounts.get(field));
                     system.debug('parentRecords.get(' + field  + ')' + parentRecords.get(field));
                 }
             }
-            if(!(fieldMap.get(field).getDescribe().nillable) && (fieldMap.get(field).getDescribe().updateable) && 
-                !requiredExceptionList(objectName, field)) 
+           
+            boolean isNillable = fieldMap.get(field).getDescribe().nillable;
+            boolean isUpdateable = fieldMap.get(field).getDescribe().updateable;
+            boolean isRequireException = requiredExceptionList(objectName, field);
+            String fieldCheckType = string.valueOf(fieldMap.get(field).getDescribe().type);
+            // isUpdateable =  (!isNillable && fieldCheckType == 'REFERENCE');
+
+             system.debug('logic test for field: ' + field);
+            if (isNillable)
+                system.debug('logic test IS nillable');
+            else 
+                system.debug('logic test NOT nillable');
+
+            if (isUpdateable)
+                system.debug('logic test IS updateable');
+            else 
+                system.debug('logic test NOT updateable');
+
+            if (isRequireException)
+                system.debug('logic test IS in requiredexception list');
+            else 
+                system.debug('logic test IS NOT in requiredexception list');
+
+            if(!isUpdateable && !isNillable && (fieldCheckType == 'REFERENCE'))
+                isUpdateable = true; // This is a master-detail
+            if (isNillable) {
+                isNillable = (fieldCheckType != 'REFERENCE');
+            } // reference fields should be updated if possible
+
+            if (field == 'name') requiredFields.add(field);
+            
+            system.debug('fieldCheckType: ' + fieldCheckType);
+            if((!isNillable) && (isUpdateable) && (!isRequireException))  {
                 system.debug('skipping: ' + objectName);
+                if (fieldMap.get(field).getDescribe().nillable) 
+                    system.debug('FIELD IS NOT REQUIRED');
+                else
+                    system.debug('FIELD IS REQUIRED');
                 requiredFields.add(field);
+            }
         }
         //  Map<String, Schema.SObjectField> finalMap = obj.fields.getMap();
         for (String field : requiredFields) {
@@ -231,7 +273,11 @@ public with sharing class objectFinderController {
         }
         try {
             List<SObject> objects = new List<SObject>();
+            system.debug('(requiredFields.size(): ' + (requiredFields.size()));
             for (integer i = 0; i < count; i++) {
+                if (Limits.getCpuTime() >= Limits.getLimitCpuTime()) {
+                    throw new objectFinderException('CPU Time Limit Exceeded');
+                }
                 system.debug('>>i: ' + i);
                 obj = Schema.getGlobalDescribe().get(objectName).newSObject();
   //              obj.put('Name', 'Test ' + i);
@@ -240,13 +286,16 @@ public with sharing class objectFinderController {
                         integer relationshipRecordCount = parentCounts.get(field);
                         system.debug('****relationshipRecordCount: ' + relationshipRecordCount);
                         system.debug('****field: ' + field);
-                        if(!fieldMap.get(field).getDescribe().updateable) continue;
-                        if(requiredExceptionList(objectName,field)) continue;
-
                         system.debug('field: ' + field);
                         string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
                         system.debug('fieldType: ' + fieldType);
-                        if (fieldType == 'CURRENCY' ) {
+
+                        if(!fieldMap.get(field).getDescribe().updateable && (fieldType != 'REFERENCE')) continue;
+                        if(requiredExceptionList(objectName,field)) continue;
+
+                        if (fieldType == 'BOOLEAN') {
+                            // do nothing
+                        } else if (fieldType == 'CURRENCY' ) {
                             obj.put(field, 1000000);
                         } else
                         if (fieldType == 'DATE' ) {
@@ -277,6 +326,8 @@ public with sharing class objectFinderController {
                             obj.put(field,''); // add blank
                         } else
                         if (fieldType == 'REFERENCE') {
+                            system.debug('field: ' + field);
+                            system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size());
                             if (parentRecords.get(field).size() <= 0) continue;
                             if (relationshipRecordCount >= parentRecords.get(field).size()) {
                                 relationshipRecordCount=0;
@@ -307,8 +358,12 @@ public with sharing class objectFinderController {
                             system.debug('2.c');
                         } else if (fieldType == 'PERCENT') {
                             // Do nothing
+                        } else if (fieldType == 'MULTIPICKLIST') {
+                            // Do nothing
                         } else if (fieldType == 'TEXTAREA') {
                             // Do nothing
+                        } else if (fieldType == 'TIME') {
+                            obj.put(field, Time.newInstance(4, 06, 00, 00));
                         } else {
                             system.debug('1.d');
                             system.debug('field: ' + field);
