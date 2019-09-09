@@ -197,6 +197,8 @@ public with sharing class objectFinderController {
 
         List<String> requiredFields = new List<String>();
 
+        Map<String,Integer> parentCounts = new Map<String,Integer>();
+
         for (String field : fieldMap.keySet()){
             string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
             if (fieldType == 'REFERENCE') {
@@ -210,8 +212,9 @@ public with sharing class objectFinderController {
                         objectNameStr = objectNameStr.remove('(');
                         objectNameStr = objectNameStr.remove(')');
                         system.debug('objectNameStr: ' + objectNameStr);
-
+                        system.debug('getting: ' + queryParentRecords(objectNameStr));
                         parentRecords.put(field,queryParentRecords(objectNameStr));
+                        parentCounts.put(field,0);
                     }
                     system.debug('parentRecords.get(' + field  + ')' + parentRecords.get(field));
                 }
@@ -228,12 +231,15 @@ public with sharing class objectFinderController {
         }
         try {
             List<SObject> objects = new List<SObject>();
-            integer relationshipRecordCount = 0;
             for (integer i = 0; i < count; i++) {
+                system.debug('>>i: ' + i);
                 obj = Schema.getGlobalDescribe().get(objectName).newSObject();
   //              obj.put('Name', 'Test ' + i);
                 if (requiredFields.size() >0 ) {
                     for (String field : requiredFields) {
+                        integer relationshipRecordCount = parentCounts.get(field);
+                        system.debug('****relationshipRecordCount: ' + relationshipRecordCount);
+                        system.debug('****field: ' + field);
                         if(!fieldMap.get(field).getDescribe().updateable) continue;
                         if(requiredExceptionList(objectName,field)) continue;
 
@@ -269,15 +275,22 @@ public with sharing class objectFinderController {
                         } else
                         if (fieldType == 'REFERENCE') {
                             if (parentRecords.get(field).size() <= 0) continue;
-
+                            if (relationshipRecordCount >= parentRecords.get(field).size()) {
+                                relationshipRecordCount=0;
+                                parentCounts.put(field,0);
+                            }
                             system.debug('*** adding reference ***');
                             system.debug('1.b');
-                            system.debug('relationshipRecordCount: ' + relationshipRecordCount);
-
-                            system.debug('parentRecords.get(field)[relationshipRecordCount]: ' + parentRecords.get(field)[relationshipRecordCount].id);
+                            system.debug('1.bbb==> field: ' + field);
                             system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size()); 
-                            obj.put(field, parentRecords.get(field)[relationshipRecordCount].Id);        
-                            if (relationshipRecordCount >= parentRecords.get(field).size()) relationshipRecordCount = 0;
+                            system.debug('parentCounts.get(field): ' + parentCounts.get(field));
+
+                            system.debug('*****parentRecords.get(field)[parentCounts.get(field)]: ' + parentRecords.get(field)[parentCounts.get(field)].id);
+                            obj.put(field, parentRecords.get(field)[parentCounts.get(field)].Id); 
+                            relationshipRecordCount++;
+                            parentCounts.put(field,relationshipRecordCount);    
+                            system.debug('*** for field: ' + field);
+                            system.debug('*** parentCounts.get(field): ' + parentCounts.get(field));                               
                             system.debug('2.b');
                         } else
                         if (fieldType == 'PICKLIST') {
@@ -299,10 +312,10 @@ public with sharing class objectFinderController {
                             system.debug('2.d');
                         }
                     }
+                    system.debug('ADDING OBJECT objects: ' + obj);
+                    objects.add(obj);
+                    system.debug('after add obj');
                 }
-                system.debug('objects: ' + objects);
-                objects.add(obj);
-                system.debug('after add obj');
             }
 
             insert objects;
