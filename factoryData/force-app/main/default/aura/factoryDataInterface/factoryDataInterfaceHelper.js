@@ -81,27 +81,36 @@
 
         action.setCallback(this, function(response) {
             var state = response.getState()
-            if (i == objectMapLength)
-                alert("Records deleted")
-            else {
-                console.log("creating: " + objects[i]);
-                recordsCreated.push(objects[i]);
-                console.log("recordsCreated: " + JSON.stringify(recordsCreated));
-                component.set("v.recordsCreated", recordsCreated);
-                $A.get("e.force:refreshView").fire();
-                
-                i++
-                if (i == objectMapLength) {
-                    recordsCreated.push("FINISHED DELETING ALL RECORDS");
-                    component.set("v.recordsCreated", recordsCreated)
-                    $A.get("e.force:refreshView").fire();
-                    return;
-                }
+            if (state === "SUCCESS") {
+                var result = response.getReturnValue();
+                if (result == "SUCCESS") {
+                    if (i == objectMapLength)
+                        alert("Records deleted")
+                    else {
+                        console.log("creating: " + objects[i]);
+                        recordsCreated.push(objects[i]);
+                        console.log("recordsCreated: " + JSON.stringify(recordsCreated));
+                        component.set("v.recordsCreated", recordsCreated);
+                        $A.get("e.force:refreshView").fire();
+                        i++
+                        if (i == objectMapLength) {
+                            recordsCreated.push("FINISHED DELETING ALL RECORDS");
+                            component.set("v.recordsCreated", recordsCreated)
+                            $A.get("e.force:refreshView").fire();
+                            return;
+                        }
 
-                action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
-                $A.enqueueAction(action);
+                        action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
+                        $A.enqueueAction(action);
+                    }
+                } // result == success
+                else {
+                    alert(result);
+                    return; // stop the process
+                }
             }
         });
+
         if (firstPass) {
             $A.enqueueAction(action);
             component.set("v.deletingData", true);
@@ -126,25 +135,27 @@
 
         action.setCallback(this, function(response) {
             var state = response.getState()
-            if (i == objectMapLength)
-                alert("Records created")
-            else {
-                console.log("creating: " + objects[i]);
-                recordsCreated.push(objects[i]);
-                console.log("recordsCreated: " + JSON.stringify(recordsCreated));
-                component.set("v.recordsCreated", recordsCreated);
-                $A.get("e.force:refreshView").fire();
-                
-                i++
-                if (i == objectMapLength) {
-                    recordsCreated.push("FINISHED CREATING ALL RECORDS");
-                    component.set("v.recordsCreated", recordsCreated)
+            if (state === "SUCCESS") {
+                if (i == objectMapLength)
+                    alert("Records created")
+                else {
+                    console.log("creating: " + objects[i]);
+                    recordsCreated.push(objects[i]);
+                    console.log("recordsCreated: " + JSON.stringify(recordsCreated));
+                    component.set("v.recordsCreated", recordsCreated);
                     $A.get("e.force:refreshView").fire();
-                    return;
-                }
+                    
+                    i++
+                    if (i == objectMapLength) {
+                        recordsCreated.push("FINISHED CREATING ALL RECORDS");
+                        component.set("v.recordsCreated", recordsCreated)
+                        $A.get("e.force:refreshView").fire();
+                        return;
+                    }
 
-                action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
-                $A.enqueueAction(action);
+                    action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
+                    $A.enqueueAction(action);
+                }
             }
         });
         if (firstPass) {
