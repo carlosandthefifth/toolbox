@@ -389,11 +389,5 @@ public with sharing class objectFinderController {
             system.debug('message: ' + e.getMessage());
         }
     }
-
-    @AuraEnabled
-    public static void deleteRecords(String objectName){
-        integer queryLimit = system.Limits.getLimitQueryLocatorRows();
-        String queryStr = 'SELECT ID FROM ' + objectName + ' LIMIT ' + queryLimit;
-        Database.query(queryStr);
-    }    
+    
 }

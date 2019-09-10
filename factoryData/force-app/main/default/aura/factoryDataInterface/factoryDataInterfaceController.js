@@ -11,6 +11,10 @@
         helper.changeRecordCount(component,event,helper);
     },
 
+    deleteData: function(component, event, helper) {
+        helper.deleteData(component, event, helper);
+    },
+    
     createData: function(component, event, helper) {
         helper.createData(component, event, helper);
     },

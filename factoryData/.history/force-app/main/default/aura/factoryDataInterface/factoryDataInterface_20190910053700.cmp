@@ -10,9 +10,6 @@
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
     <aura:attribute name="debugModeOn" type="boolean" default="false"/>
 
-    <aura:attribute name="creatingData" type="boolean" default="false"/>
-    <aura:attribute name="deletingData" type="boolean" default="false"/>
-    <aura:attribute name="recordsCreated" type="LIST"/>
     <aura:attribute name="showLoading" type="boolean" default="true"/>
     <aura:attribute name="showChangeRecordButton" type="boolean" default="false"/>
     <aura:attribute name="showEditRecordCount" type="boolean" default="false"/>
@@ -73,28 +70,8 @@
     <aura:if isTrue="{!v.showChangeRecordButton}">
         <aura:if isTrue="{!not(v.showEditRecordCount)}"> 
             <lightning:button variant="Brand" label="Change Record Count" title="Check Record Count" onclick="{!c.changeRecordCount}"/>
-            <lightning:button variant="Success" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
-            <lightning:button variant="Destructive" label="Delete Data" title="Delete Data" onclick="{!c.deleteData}"/>
+            <lightning:button variant="Destructive" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
         </aura:if>    
     </aura:if>
 </aura:if> <!--showloading-->
-<br/>
-<aura:if isTrue="{!v.creatingData}">
-    <p style="color:red"> Records for the following objects were created:</p>
-    <aura:iteration items="{!v.recordsCreated}" var="records">
-        <div style="color:blue">
-            {!records} <br/>
-        </div>
-    </aura:iteration>
-</aura:if>
-<br/>
-<aura:if isTrue="{!v.deletingData}">
-    <p style="color:red"> Records for the following objects were deleted:</p>
-    <aura:iteration items="{!v.recordsCreated}" var="records">
-        <div style="color:blue">
-            {!records} <br/>
-        </div>
-    </aura:iteration>
-</aura:if>
-
 </aura:component>

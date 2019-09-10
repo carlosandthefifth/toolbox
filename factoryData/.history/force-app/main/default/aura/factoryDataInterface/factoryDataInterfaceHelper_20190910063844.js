@@ -64,56 +64,10 @@
         console.log("StrArray: " + strArray);
     },
 
-    deleteData: function(component, event, helper) {
-        var objects = component.get("v.selectedOptions");
-        var objectMap = component.get("v.optionMap");
-        var objectMapLength = objects.length;
-        var recordsCreated = [];
-        console.log("objectMapLength: " + objectMapLength);
-        var firstPass = true;
-        var i = 0;
-        console.log("objects: " + objects);
-        console.log("objects[0]: " + objects[i]);
-        console.log("objectMap[objects[0]]: " + objectMap[objects[i]]);
-        var action = component.get("c.deleteRecords");
-
-        action.setParams({objectName: objects[i]});
-
-        action.setCallback(this, function(response) {
-            var state = response.getState()
-            if (i == objectMapLength)
-                alert("Records deleted")
-            else {
-                console.log("creating: " + objects[i]);
-                recordsCreated.push(objects[i]);
-                console.log("recordsCreated: " + JSON.stringify(recordsCreated));
-                component.set("v.recordsCreated", recordsCreated);
-                $A.get("e.force:refreshView").fire();
-                
-                i++
-                if (i == objectMapLength) {
-                    recordsCreated.push("FINISHED DELETING ALL RECORDS");
-                    component.set("v.recordsCreated", recordsCreated)
-                    $A.get("e.force:refreshView").fire();
-                    return;
-                }
-
-                action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
-                $A.enqueueAction(action);
-            }
-        });
-        if (firstPass) {
-            $A.enqueueAction(action);
-            component.set("v.deletingData", true);
-            firstPass=false;
-        }
-    },
-    
     createData: function(component, event, helper) {
         var objects = component.get("v.selectedOptions");
         var objectMap = component.get("v.optionMap");
         var objectMapLength = objects.length;
-        var recordsCreated = [];
         console.log("objectMapLength: " + objectMapLength);
         var firstPass = true;
         var i = 0;
@@ -129,17 +83,10 @@
             if (i == objectMapLength)
                 alert("Records created")
             else {
-                console.log("creating: " + objects[i]);
-                recordsCreated.push(objects[i]);
-                console.log("recordsCreated: " + JSON.stringify(recordsCreated));
-                component.set("v.recordsCreated", recordsCreated);
-                $A.get("e.force:refreshView").fire();
                 
                 i++
                 if (i == objectMapLength) {
-                    recordsCreated.push("FINISHED CREATING ALL RECORDS");
-                    component.set("v.recordsCreated", recordsCreated)
-                    $A.get("e.force:refreshView").fire();
+                    alert("Records created");
                     return;
                 }
 
@@ -149,7 +96,6 @@
         });
         if (firstPass) {
             $A.enqueueAction(action);
-            component.set("v.creatingData", true);
             firstPass=false;
         }
     },
