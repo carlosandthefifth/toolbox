@@ -17,5 +17,4 @@ git reset --hard HEAD
 git fetch --all
 git reset --hard origin/your_branch
 
- https://login.salesforce.com/packaging/installPackage.apexp?p0=04t4T000000BJ4nQAG
-
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t3i000002n8miAAA
