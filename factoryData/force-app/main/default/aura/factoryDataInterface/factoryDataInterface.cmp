@@ -4,8 +4,11 @@
 
         Interface for factory data.  Allow selection of multiple objects 
 -->
-<aura:component controller="objectFinderController" implements="force:appHostable">
+<aura:component controller="objectFinderController" implements="flexipage:availableForAllPageTypes" access="global" >
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
+    <aura:attribute name="initCalled" type="boolean" default="false"/>
+    <aura:attribute name="isDoneRendering" type="Boolean" default="false"/>
     <!--for forced refresh-->
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
     <aura:attribute name="debugModeOn" type="boolean" default="false"/>
