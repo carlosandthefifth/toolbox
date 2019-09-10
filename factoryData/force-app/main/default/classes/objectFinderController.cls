@@ -12,16 +12,25 @@ public with sharing class objectFinderController {
     // You cannot query the objects, but putting in a query checks results in 101 SOQL error.  The elegant way around this might be 
     // to create queuable batches that run in their own Apex transaction and avoid this error, but the easy solution (and since this is 
     // just a utility program) is to create an exception list like this:
+    // Event was excluded until we determine the best way to handle whatId that can be Account, Asset, AssetRelationship, Campaign, Case, ContactRequest, Contract, Goal,
+    // ListEmail ... 
+    // Idea was excluded bedause of a query restriction
     private static List<String> unsupportedObjects = new List<String> {'ConferenceNumber','ExternalEventMapping','ExternalEventMappingShare',
-        'ExternalEvent'};
-    private static boolean isSupported = true;
+        'ExternalEvent','AppAnalyticsQueryRequest', 'CollaborationGroup', 'CollaborationGroupRecord', 'ContentBody', 'ContentVersion', 'Event',
+        'FlowInterview', 'FlowRecordRelation', 'Idea','ProductRequestLineItem','Recommendation','QuickText','PromptAction','ProductTransfer','ProductRequired',
+        'ProductRequest','Image','Asset','ProductItem','ProductConsumptionSchedule','ProductConsumed','Product2','Pricebook2','Order','DuplicateRecordSet',
+        'DuplicateRecordItem','RecordAction','MacroInstruction','Macro','ExpressionFilter','ExpressionFilterCriteria','RecordAction','Task'};
+
+    private static List<String> objectAllowList = new List<String> {'Account',  'Address',  'Announcement',  'Campaign', 'CampaignMember', 'Case', 
+        'ConsumptionRate', 'ConsumptionSchedule', 'Contact', 'ContactRequest', 'Contract', 'Lead', 'Location', 'Opportunity', 'ReturnOrder', 
+        'Shipment', 'WorkAccess', 'WorkBadge', 'WorkBadgeDefinition', 'WorkOrder', 'WorkTypeGroup'};    
 
     public class objectFinderException extends Exception {}
 
     // fields for each object discovered
     private static Map<String,List<String>> objectFields = new Map<String,List<String>>();
 
-    private static boolean isSupported (string objectName) {
+    private static boolean isObjectSupported (string objectName) {
         // go through the exception list of objects
         // most unsupported objects can be found listed on this article
         // Unsupported Salesforce Objects and Fields in Analytics
@@ -32,6 +41,14 @@ public with sharing class objectFinderController {
         return true;
     }
 
+
+    private static boolean isObjectAllowed (string objectName) {
+        for (String allowedObject: objectAllowList) {
+            if (objectname.indexOf('__c') > 0 ) return true;
+            if (objectName == allowedObject) return true;
+        }
+        return false;
+    }
     @AuraEnabled
     public static Map<String,Integer> getObjectNames(){
         system.debug('inside getObjectNames');
@@ -44,7 +61,8 @@ public with sharing class objectFinderController {
             Schema.DescribeSObjectResult describeObject = anObject.getDescribe();
         
             if (!describeObject.accessible) continue; // cannot access the object - skip
-            if (!isSupported(describeObject.name)) continue; // Unsupported object
+//            if (!isObjectSupported(describeObject.name)) continue; // Unsupported object
+            if (!isObjectAllowed(describeObject.name)) continue; // Allowed objects list to future proof this code
             if(!describeObject.isCreateable()) continue;
 
             if((describeObject.isCustom() == false) && (describeObject.getRecordTypeInfos().size()) > 0)
@@ -207,9 +225,16 @@ public with sharing class objectFinderController {
         List<String> requiredFields = new List<String>();
 
         Map<String,Integer> parentCounts = new Map<String,Integer>();
-
+        
         for (String field : fieldMap.keySet()){
             string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
+            if (fieldType != 'REFERENCE') {
+                if (!fieldMap.get(field).getDescribe().Updateable || !fieldMap.get(field).getDescribe().createable) {
+                    if (DEBUG_MODE) system.debug('field ' + field + ' is not updateable or createable');
+                    continue;
+                }
+            }
+            
             if (fieldType == 'REFERENCE') {
                 if(DEBUG_MODE) {
                     system.debug('finalmap.get(field).getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
@@ -223,13 +248,25 @@ public with sharing class objectFinderController {
                         string objectNameStr = string.valueOf(fieldMap.get(field).getDescribe().referenceto);
                         objectNameStr = objectNameStr.remove('(');
                         objectNameStr = objectNameStr.remove(')');
+                        boolean multipleObjects = (objectNameStr.indexOf(',') > 0);
                         if(DEBUG_MODE) {
                             system.debug('objectNameStr: ' + objectNameStr);
-                            system.debug('getting: ' + queryParentRecords(objectNameStr));
+                            if (!multipleObjects)
+                                system.debug('getting: ' + queryParentRecords(objectNameStr));
                             system.debug('field: ' + field);
                         }
-                        parentRecords.put(field,queryParentRecords(objectNameStr));
-                        parentCounts.put(field,0);
+                        if (DEBUG_MODE)
+                            system.debug('objectNameStr.indexOf(,): '  + objectNameStr.indexOf(','));
+                        if (multipleObjects) {
+                            List<String> multObjects = objectNameStr.split(',');
+                            for (String oneObj : multObjects) {
+                                parentRecords.put(field,queryParentRecords(oneObj));
+                                parentCounts.put(field,0);
+                            }
+                        } else {
+                            parentRecords.put(field,queryParentRecords(objectNameStr));
+                            parentCounts.put(field,0);
+                        }
                     }
                     if (DEBUG_MODE) {
                         system.debug('field: ' + field);
@@ -244,6 +281,19 @@ public with sharing class objectFinderController {
             boolean isRequireException = requiredExceptionList(objectName, field);
             String fieldCheckType = string.valueOf(fieldMap.get(field).getDescribe().type);
             // isUpdateable =  (!isNillable && fieldCheckType == 'REFERENCE');
+            
+            if(!isUpdateable && !isNillable && (fieldCheckType == 'REFERENCE'))
+                isUpdateable = true; // This is a master-detail
+            if (isNillable) {
+                isNillable = (fieldCheckType != 'REFERENCE');
+            } // reference fields should be updated if possible
+
+            if (field == 'name') requiredFields.add(field);
+            
+            if (DEBUG_MODE) {
+                system.debug('fieldCheckType: ' + fieldCheckType);
+            }
+                
             if (DEBUG_MODE) {
                 system.debug('logic test for field: ' + field);
                 if (isNillable)
@@ -261,25 +311,20 @@ public with sharing class objectFinderController {
                 else 
                     system.debug('logic test IS NOT in requiredexception list');
             }
-            if(!isUpdateable && !isNillable && (fieldCheckType == 'REFERENCE'))
-                isUpdateable = true; // This is a master-detail
-            if (isNillable) {
-                isNillable = (fieldCheckType != 'REFERENCE');
-            } // reference fields should be updated if possible
 
-            if (field == 'name') requiredFields.add(field);
-            
-            if (DEBUG_MODE) {
-                system.debug('fieldCheckType: ' + fieldCheckType);
-                if((!isNillable) && (isUpdateable) && (!isRequireException))  {
+            if((!isNillable) && (isUpdateable) && (!isRequireException))  {
+                if (DEBUG_MODE) {
                     system.debug('skipping: ' + objectName);
-                    if (fieldMap.get(field).getDescribe().nillable) 
+                
+                    if (fieldMap.get(field).getDescribe().nillable) {
                         system.debug('FIELD IS NOT REQUIRED');
-                    else
-                        system.debug('FIELD IS REQUIRED');
-            }        
+                    }
+                }
+                    
                 requiredFields.add(field);
-            }
+            }        
+                
+            
         }
         //  Map<String, Schema.SObjectField> finalMap = obj.fields.getMap();
         if(DEBUG_MODE) {
@@ -375,9 +420,11 @@ public with sharing class objectFinderController {
                                 system.debug('parentCounts.get(field): ' + parentCounts.get(field));
 
                                 system.debug('*****parentRecords.get(field)[parentCounts.get(field)]: ' + parentRecords.get(field)[parentCounts.get(field)].id);
-                                obj.put(field, parentRecords.get(field)[parentCounts.get(field)].Id); 
-                                relationshipRecordCount++;
-                                parentCounts.put(field,relationshipRecordCount);    
+                            }
+                            obj.put(field, parentRecords.get(field)[parentCounts.get(field)].Id); 
+                            relationshipRecordCount++;
+                            parentCounts.put(field,relationshipRecordCount);    
+                            if (DEBUG_MODE) {
                                 system.debug('*** for field: ' + field);
                                 system.debug('*** parentCounts.get(field): ' + parentCounts.get(field));                               
                                 system.debug('2.b');
@@ -433,8 +480,12 @@ public with sharing class objectFinderController {
                         system.debug('after add obj');
                 }
             }
-
-            insert objects;
+            if (DEBUG_MODE) {
+                system.debug('objects: ' + objects);
+                system.debug('objects.size(): '  + objects.size());
+            }
+            if (objects.size()>0)
+                insert objects;
         } catch (Exception e) {
             system.debug('message: ' + e.getMessage());
         }

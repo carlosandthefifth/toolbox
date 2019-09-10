@@ -109,6 +109,7 @@
         if (firstPass) {
             $A.enqueueAction(action);
             component.set("v.deletingData", true);
+            component.set("v.creatingData", false);
             firstPass=false;
         }
     },
@@ -165,6 +166,7 @@
         if (firstPass) {
             $A.enqueueAction(action);
             component.set("v.creatingData", true);
+            component.set("v.deletingData", false);
             firstPass=false;
         }
     },
