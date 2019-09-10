@@ -1,4 +1,6 @@
 public with sharing class objectFinderController {
+
+    private static final boolean DEBUG_MODE = false;
     private static List<String> objectNameList = new List<String>();
     private static List<String> recordList = new List<String>();
 
@@ -95,81 +97,84 @@ public with sharing class objectFinderController {
 
         Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objectName);
         sObject obj = targetType.newSObject();
-        system.debug('obj: ' + obj);
+        if (DEBUG_MODE) {
+           system.debug('obj: ' + obj);
+        }
         
       //  Schema.SObjectType anObject = objects.get(objectName);
 
         Schema.DescribeSObjectResult describeObject = targetType.getDescribe();
 
         Map<String, Schema.SObjectField> finalMap = describeObject.fields.getMap();
-
-        for(String field : finalMap.keySet()) {
-            system.debug('field: ' + finalMap.get(field));
-            system.debug('1' + finalmap.get(field).getDescribe().accessible);
-            system.debug('2' + finalmap.get(field).getDescribe().aggregatable);
-            system.debug('3' + finalmap.get(field).getDescribe().aipredictionfield);
-            system.debug('4' + finalmap.get(field).getDescribe().autonumber);
-            system.debug('5' + finalmap.get(field).getDescribe().bytelength);
-            system.debug('6' + finalmap.get(field).getDescribe().calculated);
-            system.debug('7' + finalmap.get(field).getDescribe().calculatedformula);
-            system.debug('8' + finalmap.get(field).getDescribe().cascadedelete);
-            system.debug('9' + finalmap.get(field).getDescribe().casesensitive);
-            system.debug('10' + finalmap.get(field).getDescribe().compoundfieldname);
-            system.debug('12' + finalmap.get(field).getDescribe().controller);
-            system.debug('13' + finalmap.get(field).getDescribe().createable);
-            system.debug('14' + finalmap.get(field).getDescribe().custom);
-            system.debug('15' + finalmap.get(field).getDescribe().defaultedoncreate);
-            system.debug('16' + finalmap.get(field).getDescribe().defaultvalue);
-            system.debug('17' + finalmap.get(field).getDescribe().defaultvalueformula);
-            system.debug('18' + finalmap.get(field).getDescribe().dependentpicklist);
-            system.debug('19' + finalmap.get(field).getDescribe().deprecatedandhidden);
-            system.debug('20' + finalmap.get(field).getDescribe().digits);
-            system.debug('21' + finalmap.get(field).getDescribe().displaylocationindecimal);
-            system.debug('22' + finalmap.get(field).getDescribe().encrypted);
-            system.debug('23' + finalmap.get(field).getDescribe().externalid);
-            system.debug('24' + finalmap.get(field).getDescribe().filterable);
-            system.debug('25' + finalmap.get(field).getDescribe().filteredlookupinfo);
-            system.debug('26' + finalmap.get(field).getDescribe().formulatreatnullnumberaszero);
-            system.debug('27' + finalmap.get(field).getDescribe().groupable);
-            system.debug('28' + finalmap.get(field).getDescribe().highscalenumber);
-            system.debug('29' + finalmap.get(field).getDescribe().htmlformatted);
-            system.debug('30' + finalmap.get(field).getDescribe().idlookup);
-            system.debug('31' + finalmap.get(field).getDescribe().inlinehelptext);
-            system.debug('32' + finalmap.get(field).getDescribe().label);
-            system.debug('33' + finalmap.get(field).getDescribe().length);
-            system.debug('34' + finalmap.get(field).getDescribe().localname);
-            system.debug('35' + finalmap.get(field).getDescribe().mask);
-            system.debug('36' + finalmap.get(field).getDescribe().masktype);
-            system.debug('37' + finalmap.get(field).getDescribe().name);
-            system.debug('38' + finalmap.get(field).getDescribe().namepointing);
-            system.debug('39' + finalmap.get(field).getDescribe().nillable);
-            system.debug('40' + finalmap.get(field).getDescribe().permissionable);
-            system.debug('41' + finalmap.get(field).getDescribe().picklistvalues);
-            system.debug('42' + finalmap.get(field).getDescribe().precision);
-            system.debug('43' + finalmap.get(field).getDescribe().querybydistance);
-            system.debug('44' + finalmap.get(field).getDescribe().referencetargetfield);
-            system.debug('45' + finalmap.get(field).getDescribe().referenceto);
-            system.debug('46' + finalmap.get(field).getDescribe().relationshipname);
-            system.debug('47' + finalmap.get(field).getDescribe().relationshiporder);
-            system.debug('48' + finalmap.get(field).getDescribe().restricteddelete);
-            system.debug('49' + finalmap.get(field).getDescribe().restrictedpicklist);
-            system.debug('50' + finalmap.get(field).getDescribe().scale);
-            system.debug('51' + finalmap.get(field).getDescribe().searchprefilterable);
-            system.debug('52' + finalmap.get(field).getDescribe().soaptype);
-            system.debug('53' + finalmap.get(field).getDescribe().sobjectfield);
-            system.debug('54' + finalmap.get(field).getDescribe().sortable);
-            system.debug('55' + finalmap.get(field).getDescribe().type);
-            system.debug('56' + finalmap.get(field).getDescribe().unique);
-            system.debug('57' + finalmap.get(field).getDescribe().updateable);          
+        if(DEBUG_MODE) {
+            for(String field : finalMap.keySet()) {
+                system.debug('field: ' + finalMap.get(field));
+                system.debug('1' + finalmap.get(field).getDescribe().accessible);
+                system.debug('2' + finalmap.get(field).getDescribe().aggregatable);
+                system.debug('3' + finalmap.get(field).getDescribe().aipredictionfield);
+                system.debug('4' + finalmap.get(field).getDescribe().autonumber);
+                system.debug('5' + finalmap.get(field).getDescribe().bytelength);
+                system.debug('6' + finalmap.get(field).getDescribe().calculated);
+                system.debug('7' + finalmap.get(field).getDescribe().calculatedformula);
+                system.debug('8' + finalmap.get(field).getDescribe().cascadedelete);
+                system.debug('9' + finalmap.get(field).getDescribe().casesensitive);
+                system.debug('10' + finalmap.get(field).getDescribe().compoundfieldname);
+                system.debug('12' + finalmap.get(field).getDescribe().controller);
+                system.debug('13' + finalmap.get(field).getDescribe().createable);
+                system.debug('14' + finalmap.get(field).getDescribe().custom);
+                system.debug('15' + finalmap.get(field).getDescribe().defaultedoncreate);
+                system.debug('16' + finalmap.get(field).getDescribe().defaultvalue);
+                system.debug('17' + finalmap.get(field).getDescribe().defaultvalueformula);
+                system.debug('18' + finalmap.get(field).getDescribe().dependentpicklist);
+                system.debug('19' + finalmap.get(field).getDescribe().deprecatedandhidden);
+                system.debug('20' + finalmap.get(field).getDescribe().digits);
+                system.debug('21' + finalmap.get(field).getDescribe().displaylocationindecimal);
+                system.debug('22' + finalmap.get(field).getDescribe().encrypted);
+                system.debug('23' + finalmap.get(field).getDescribe().externalid);
+                system.debug('24' + finalmap.get(field).getDescribe().filterable);
+                system.debug('25' + finalmap.get(field).getDescribe().filteredlookupinfo);
+                system.debug('26' + finalmap.get(field).getDescribe().formulatreatnullnumberaszero);
+                system.debug('27' + finalmap.get(field).getDescribe().groupable);
+                system.debug('28' + finalmap.get(field).getDescribe().highscalenumber);
+                system.debug('29' + finalmap.get(field).getDescribe().htmlformatted);
+                system.debug('30' + finalmap.get(field).getDescribe().idlookup);
+                system.debug('31' + finalmap.get(field).getDescribe().inlinehelptext);
+                system.debug('32' + finalmap.get(field).getDescribe().label);
+                system.debug('33' + finalmap.get(field).getDescribe().length);
+                system.debug('34' + finalmap.get(field).getDescribe().localname);
+                system.debug('35' + finalmap.get(field).getDescribe().mask);
+                system.debug('36' + finalmap.get(field).getDescribe().masktype);
+                system.debug('37' + finalmap.get(field).getDescribe().name);
+                system.debug('38' + finalmap.get(field).getDescribe().namepointing);
+                system.debug('39' + finalmap.get(field).getDescribe().nillable);
+                system.debug('40' + finalmap.get(field).getDescribe().permissionable);
+                system.debug('41' + finalmap.get(field).getDescribe().picklistvalues);
+                system.debug('42' + finalmap.get(field).getDescribe().precision);
+                system.debug('43' + finalmap.get(field).getDescribe().querybydistance);
+                system.debug('44' + finalmap.get(field).getDescribe().referencetargetfield);
+                system.debug('45' + finalmap.get(field).getDescribe().referenceto);
+                system.debug('46' + finalmap.get(field).getDescribe().relationshipname);
+                system.debug('47' + finalmap.get(field).getDescribe().relationshiporder);
+                system.debug('48' + finalmap.get(field).getDescribe().restricteddelete);
+                system.debug('49' + finalmap.get(field).getDescribe().restrictedpicklist);
+                system.debug('50' + finalmap.get(field).getDescribe().scale);
+                system.debug('51' + finalmap.get(field).getDescribe().searchprefilterable);
+                system.debug('52' + finalmap.get(field).getDescribe().soaptype);
+                system.debug('53' + finalmap.get(field).getDescribe().sobjectfield);
+                system.debug('54' + finalmap.get(field).getDescribe().sortable);
+                system.debug('55' + finalmap.get(field).getDescribe().type);
+                system.debug('56' + finalmap.get(field).getDescribe().unique);
+                system.debug('57' + finalmap.get(field).getDescribe().updateable);          
+            }
         }
-        
     }
 
     private static List<Sobject> queryParentRecords (String objectName)
     {
         integer queryLimit = system.Limits.getLimitQueryLocatorRows();
         String queryStr = 'SELECT ID FROM ' + objectName + ' LIMIT ' + queryLimit;
-        system.debug('queryStr ' + queryStr);
+        if (DEBUG_MODE)
+            system.debug('queryStr ' + queryStr);
         return Database.query(queryStr);
     }
 
@@ -189,7 +194,8 @@ public with sharing class objectFinderController {
 
     @AuraEnabled
     public static void createRecords(String objectName, Integer count) {
-        system.debug('objectName: '  + objectName);
+        if (DEBUG_MODE)
+            system.debug('objectName: '  + objectName);
         //Casting String to sObject
         SObject obj;
         Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
@@ -205,24 +211,31 @@ public with sharing class objectFinderController {
         for (String field : fieldMap.keySet()){
             string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
             if (fieldType == 'REFERENCE') {
-                system.debug('finalmap.get(field).getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
-                system.debug('field: ' + field);
-                system.debug('string.valueOf(fieldMap.get(field).getDescribe().type: ' + fieldType);
+                if(DEBUG_MODE) {
+                    system.debug('finalmap.get(field).getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
+                    system.debug('field: ' + field);
+                    system.debug('string.valueOf(fieldMap.get(field).getDescribe().type: ' + fieldType);
+                }
                 if (!requiredExceptionList(objectName, field)) {
-                    system.debug('fieldMap.get(' + field + ').getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
+                    if(DEBUG_MODE)
+                        system.debug('fieldMap.get(' + field + ').getDescribe().relationshipname: ' + fieldMap.get(field).getDescribe().referenceto);
                     if (fieldMap.get(field).getDescribe().referenceto != null) {
                         string objectNameStr = string.valueOf(fieldMap.get(field).getDescribe().referenceto);
                         objectNameStr = objectNameStr.remove('(');
                         objectNameStr = objectNameStr.remove(')');
-                        system.debug('objectNameStr: ' + objectNameStr);
-                        system.debug('getting: ' + queryParentRecords(objectNameStr));
-                        system.debug('field: ' + field);
+                        if(DEBUG_MODE) {
+                            system.debug('objectNameStr: ' + objectNameStr);
+                            system.debug('getting: ' + queryParentRecords(objectNameStr));
+                            system.debug('field: ' + field);
+                        }
                         parentRecords.put(field,queryParentRecords(objectNameStr));
                         parentCounts.put(field,0);
                     }
-                    system.debug('field: ' + field);
-                    system.debug('parentCounts.get(' + field + '): ' + parentCounts.get(field));
-                    system.debug('parentRecords.get(' + field  + ')' + parentRecords.get(field));
+                    if (DEBUG_MODE) {
+                        system.debug('field: ' + field);
+                        system.debug('parentCounts.get(' + field + '): ' + parentCounts.get(field));
+                        system.debug('parentRecords.get(' + field  + ')' + parentRecords.get(field));
+                    }
                 }
             }
            
@@ -231,23 +244,23 @@ public with sharing class objectFinderController {
             boolean isRequireException = requiredExceptionList(objectName, field);
             String fieldCheckType = string.valueOf(fieldMap.get(field).getDescribe().type);
             // isUpdateable =  (!isNillable && fieldCheckType == 'REFERENCE');
+            if (DEBUG_MODE) {
+                system.debug('logic test for field: ' + field);
+                if (isNillable)
+                    system.debug('logic test IS nillable');
+                else 
+                    system.debug('logic test NOT nillable');
 
-             system.debug('logic test for field: ' + field);
-            if (isNillable)
-                system.debug('logic test IS nillable');
-            else 
-                system.debug('logic test NOT nillable');
+                if (isUpdateable)
+                    system.debug('logic test IS updateable');
+                else 
+                    system.debug('logic test NOT updateable');
 
-            if (isUpdateable)
-                system.debug('logic test IS updateable');
-            else 
-                system.debug('logic test NOT updateable');
-
-            if (isRequireException)
-                system.debug('logic test IS in requiredexception list');
-            else 
-                system.debug('logic test IS NOT in requiredexception list');
-
+                if (isRequireException)
+                    system.debug('logic test IS in requiredexception list');
+                else 
+                    system.debug('logic test IS NOT in requiredexception list');
+            }
             if(!isUpdateable && !isNillable && (fieldCheckType == 'REFERENCE'))
                 isUpdateable = true; // This is a master-detail
             if (isNillable) {
@@ -256,39 +269,49 @@ public with sharing class objectFinderController {
 
             if (field == 'name') requiredFields.add(field);
             
-            system.debug('fieldCheckType: ' + fieldCheckType);
-            if((!isNillable) && (isUpdateable) && (!isRequireException))  {
-                system.debug('skipping: ' + objectName);
-                if (fieldMap.get(field).getDescribe().nillable) 
-                    system.debug('FIELD IS NOT REQUIRED');
-                else
-                    system.debug('FIELD IS REQUIRED');
+            if (DEBUG_MODE) {
+                system.debug('fieldCheckType: ' + fieldCheckType);
+                if((!isNillable) && (isUpdateable) && (!isRequireException))  {
+                    system.debug('skipping: ' + objectName);
+                    if (fieldMap.get(field).getDescribe().nillable) 
+                        system.debug('FIELD IS NOT REQUIRED');
+                    else
+                        system.debug('FIELD IS REQUIRED');
+            }        
                 requiredFields.add(field);
             }
         }
         //  Map<String, Schema.SObjectField> finalMap = obj.fields.getMap();
-        for (String field : requiredFields) {
-            system.debug('field: ' + field);
-            system.debug('type: ' + fieldMap.get(field).getDescribe().type);
+        if(DEBUG_MODE) {
+            for (String field : requiredFields) {
+                system.debug('field: ' + field);
+                system.debug('type: ' + fieldMap.get(field).getDescribe().type);
+            }
         }
         try {
             List<SObject> objects = new List<SObject>();
-            system.debug('(requiredFields.size(): ' + (requiredFields.size()));
+            if(DEBUG_MODE)
+                system.debug('(requiredFields.size(): ' + (requiredFields.size()));
             for (integer i = 0; i < count; i++) {
                 if (Limits.getCpuTime() >= Limits.getLimitCpuTime()) {
+                    // There is not a way to catch a limit error so we have to detect the error and throw it ourselves
                     throw new objectFinderException('CPU Time Limit Exceeded');
                 }
-                system.debug('>>i: ' + i);
+                if (DEBUG_MODE) 
+                    system.debug('>>i: ' + i);
                 obj = Schema.getGlobalDescribe().get(objectName).newSObject();
   //              obj.put('Name', 'Test ' + i);
                 if (requiredFields.size() >0 ) {
                     for (String field : requiredFields) {
                         integer relationshipRecordCount = parentCounts.get(field);
-                        system.debug('****relationshipRecordCount: ' + relationshipRecordCount);
-                        system.debug('****field: ' + field);
-                        system.debug('field: ' + field);
+                        if (DEBUG_MODE) {
+                            system.debug('****relationshipRecordCount: ' + relationshipRecordCount);
+                            system.debug('****field: ' + field);
+                            system.debug('field: ' + field);
+                        }
                         string fieldType = string.valueOf(fieldMap.get(field).getDescribe().type);
-                        system.debug('fieldType: ' + fieldType);
+                        if (DEBUG_MODE)
+                            system.debug('fieldType: ' + fieldType);
 
                         if(!fieldMap.get(field).getDescribe().updateable && (fieldType != 'REFERENCE')) continue;
                         if(requiredExceptionList(objectName,field)) continue;
@@ -299,22 +322,30 @@ public with sharing class objectFinderController {
                             obj.put(field, 1000000);
                         } else
                         if (fieldType == 'DATE' ) {
-                            system.debug('1.a');
+                            if(DEBUG_MODE)
+                                system.debug('1.a');
                             DATE dt = system.today().addDays(30);
-                            system.debug('field: ' + string.valueOf(field));
-                            system.debug('system.today().addDays(30): ' + dt.format());
-                            system.debug('dt: ' + dt);
+                            if (DEBUG_MODE) {
+                                system.debug('field: ' + string.valueOf(field));
+                                system.debug('system.today().addDays(30): ' + dt.format());
+                                system.debug('dt: ' + dt);
+                            }
                             obj.put(field, dt);
-                            system.debug('2.a');
+                            if (DEBUG_MODE)
+                                system.debug('2.a');
                         } else
                         if (fieldType == 'DATETIME' ) {
-                            system.debug('1.E');
+                            if (DEBUG_MODE) 
+                                system.debug('1.E');
                             DATE dt = system.today().addDays(30);
-                            system.debug('field: ' + string.valueOf(field));
-                            system.debug('system.today().addDays(30): ' + dt.format());
-                            system.debug('dt: ' + dt);
+                            if(DEBUG_MODE) {
+                                system.debug('field: ' + string.valueOf(field));
+                                system.debug('system.today().addDays(30): ' + dt.format());
+                                system.debug('dt: ' + dt);
+                            }
                             obj.put(field, dt);
-                            system.debug('2.E');
+                            if (DEBUG_MODE) 
+                                system.debug('2.E');
                         } else
                         if (fieldType == 'DOUBLE') {
                             // do nothing
@@ -326,36 +357,47 @@ public with sharing class objectFinderController {
                             obj.put(field,''); // add blank
                         } else
                         if (fieldType == 'REFERENCE') {
-                            system.debug('field: ' + field);
-                            system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size());
+                            if (DEBUG_MODE) {
+                                system.debug('field: ' + field);
+                                system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size());
+                            }
                             if (parentRecords.get(field).size() <= 0) continue;
+                            
                             if (relationshipRecordCount >= parentRecords.get(field).size()) {
                                 relationshipRecordCount=0;
                                 parentCounts.put(field,0);
                             }
-                            system.debug('*** adding reference ***');
-                            system.debug('1.b');
-                            system.debug('1.bbb==> field: ' + field);
-                            system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size()); 
-                            system.debug('parentCounts.get(field): ' + parentCounts.get(field));
+                            if (DEBUG_MODE) {
+                                system.debug('*** adding reference ***');
+                                system.debug('1.b');
+                                system.debug('1.bbb==> field: ' + field);
+                                system.debug('parentRecords.get(field).size(): ' + parentRecords.get(field).size()); 
+                                system.debug('parentCounts.get(field): ' + parentCounts.get(field));
 
-                            system.debug('*****parentRecords.get(field)[parentCounts.get(field)]: ' + parentRecords.get(field)[parentCounts.get(field)].id);
-                            obj.put(field, parentRecords.get(field)[parentCounts.get(field)].Id); 
-                            relationshipRecordCount++;
-                            parentCounts.put(field,relationshipRecordCount);    
-                            system.debug('*** for field: ' + field);
-                            system.debug('*** parentCounts.get(field): ' + parentCounts.get(field));                               
-                            system.debug('2.b');
+                                system.debug('*****parentRecords.get(field)[parentCounts.get(field)]: ' + parentRecords.get(field)[parentCounts.get(field)].id);
+                                obj.put(field, parentRecords.get(field)[parentCounts.get(field)].Id); 
+                                relationshipRecordCount++;
+                                parentCounts.put(field,relationshipRecordCount);    
+                                system.debug('*** for field: ' + field);
+                                system.debug('*** parentCounts.get(field): ' + parentCounts.get(field));                               
+                                system.debug('2.b');
+                            }
                         } else
                         if (fieldType == 'PICKLIST') {
-                            system.debug('1.c');                                    
+                            if (DEBUG_MODE)
+                                system.debug('1.c');                                    
                             List<Schema.PicklistEntry> entries = fieldMap.get(field).getDescribe().getPicklistValues();
-                            for (Schema.PicklistEntry entry : entries) {
-                                system.debug('entry: ' + entry);
+                            if (DEBUG_MODE) {
+                                for (Schema.PicklistEntry entry : entries) {
+                                    system.debug('entry: ' + entry);
+                                }
                             }
-                            system.debug('entries.get(0): ' + entries.get(0).getValue());
+                            
+                            if (DEBUG_MODE)
+                                system.debug('entries.get(0): ' + entries.get(0).getValue());
                             obj.put(field, entries.get(0).getValue());
-                            system.debug('2.c');
+                            if (DEBUG_MODE)
+                                system.debug('2.c');
                         } else if (fieldType == 'PERCENT') {
                             // Do nothing
                         } else if (fieldType == 'MULTIPICKLIST') {
@@ -365,22 +407,30 @@ public with sharing class objectFinderController {
                         } else if (fieldType == 'TIME') {
                             obj.put(field, Time.newInstance(4, 06, 00, 00));
                         } else {
-                            system.debug('1.d');
-                            system.debug('field: ' + field);
-                            system.debug('fieldType: ' + fieldType);
+                            if (DEBUG_MODE) {
+                                system.debug('1.d');
+                                system.debug('field: ' + field);
+                                system.debug('fieldType: ' + fieldType);
+                            }
                             string value = 'test ' + i;
-                            system.debug('field.length(): ' + fieldMap.get(field).getDescribe().getLength());
-                            system.debug('value.length(): ' + value.length());
+                            if (DEBUG_MODE) {
+                                system.debug('field.length(): ' + fieldMap.get(field).getDescribe().getLength());
+                                system.debug('value.length(): ' + value.length());
+                            }
                             if (fieldMap.get(field).getDescribe().getLength() < value.length())
                                 value = value.substring(fieldMap.get(field).getDescribe().getLength());
-                            system.debug('value: ' + value);
+                            if (DEBUG_MODE)
+                                system.debug('value: ' + value);
                             obj.put(field, value);
-                            system.debug('2.d');
+                            if (DEBUG_MODE)
+                                system.debug('2.d');
                         }
                     }
-                    system.debug('ADDING OBJECT objects: ' + obj);
+                    if (DEBUG_MODE)
+                        system.debug('ADDING OBJECT objects: ' + obj);
                     objects.add(obj);
-                    system.debug('after add obj');
+                    if (DEBUG_MODE)
+                        system.debug('after add obj');
                 }
             }
 
@@ -396,9 +446,10 @@ public with sharing class objectFinderController {
             integer queryLimit = system.Limits.getLimitQueryLocatorRows();
             String queryStr = 'SELECT ID FROM ' + objectName + ' LIMIT ' + queryLimit;
             List<SObject> objs = Database.query(queryStr);
-            delete objs;
+            if (objs.size() > 0)
+                delete objs;
         } catch (exception e) {
-            return e.getMessage();
+            return 'failed to delete object ' + objectName + ' with error message: ' + e.getMessage();
         }
 
         return 'SUCCESS';

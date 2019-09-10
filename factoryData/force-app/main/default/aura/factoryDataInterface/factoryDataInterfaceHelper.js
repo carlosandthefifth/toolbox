@@ -67,29 +67,25 @@
     deleteData: function(component, event, helper) {
         var objects = component.get("v.selectedOptions");
         var objectMap = component.get("v.optionMap");
+        var debugMode = component.get("v.debugModeOn");
         var objectMapLength = objects.length;
         var recordsCreated = [];
-        console.log("objectMapLength: " + objectMapLength);
+        
         var firstPass = true;
         var i = 0;
-        console.log("objects: " + objects);
-        console.log("objects[0]: " + objects[i]);
-        console.log("objectMap[objects[0]]: " + objectMap[objects[i]]);
         var action = component.get("c.deleteRecords");
-
         action.setParams({objectName: objects[i]});
-
         action.setCallback(this, function(response) {
             var state = response.getState()
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 if (result == "SUCCESS") {
+                    if (debugMode) // output to console
+                       helper.debug_deleteData(objects,objectMap,objectMapLength,recordsCreated,i);
                     if (i == objectMapLength)
                         alert("Records deleted")
                     else {
-                        console.log("creating: " + objects[i]);
                         recordsCreated.push(objects[i]);
-                        console.log("recordsCreated: " + JSON.stringify(recordsCreated));
                         component.set("v.recordsCreated", recordsCreated);
                         $A.get("e.force:refreshView").fire();
                         i++
@@ -99,7 +95,6 @@
                             $A.get("e.force:refreshView").fire();
                             return;
                         }
-
                         action.setParams({objectName: objects[i], count : objectMap[objects[i]]});
                         $A.enqueueAction(action);
                     }
@@ -118,6 +113,15 @@
         }
     },
     
+    debug_deleteData:function(objects,objectMap,objectMapLength,recordsCreated,i) {
+        console.log("objectMapLength: " + objectMapLength);
+        console.log("objects: " + objects);
+        console.log("objects[0]: " + objects[i]);
+        console.log("objectMap[objects[0]]: " + objectMap[objects[i]]);
+        console.log("creating: " + objects[i]);
+        console.log("recordsCreated: " + JSON.stringify(recordsCreated));                
+    },
+
     createData: function(component, event, helper) {
         var objects = component.get("v.selectedOptions");
         var objectMap = component.get("v.optionMap");

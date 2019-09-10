@@ -4,7 +4,7 @@
 
         Interface for factory data.  Allow selection of multiple objects 
 -->
-<aura:component controller="objectFinderController">
+<aura:component controller="objectFinderController" implements="force:appHostable">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <!--for forced refresh-->
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
