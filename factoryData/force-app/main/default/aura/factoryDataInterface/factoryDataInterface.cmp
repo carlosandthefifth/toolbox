@@ -3,6 +3,10 @@
         DATE:       September 3, 2019
 
         Interface for factory data.  Allow selection of multiple objects 
+
+        September 10, 2019:
+        onInit is called multiple times if the application is added to a lightning page. 
+        
 -->
 <aura:component controller="objectFinderController" implements="flexipage:availableForAllPageTypes" access="global" >
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
