@@ -1,0 +1,13 @@
+<apex:page >
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <center>
+        <b>
+            <apex:outputlink style="font-size:20px" value="/c/factoryDataApp.app">Launch Factory Data App</apex:outputlink>
+        </b>
+    </center>
+</apex:page>

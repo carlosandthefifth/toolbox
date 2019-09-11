@@ -5,28 +5,42 @@
         Interface for factory data.  Allow selection of multiple objects 
 
         September 10, 2019:
-        onInit is called multiple times if the application is added to a lightning page. 
+        onInit is called multiple times if the application is added to a lightning page.  We were running this in a App container while developing the code.
+        Research shows that if you have a client-side controller method that matches a server-side controller method, this can cause an issue.  Looking over my 
+        code, this is not the case.  I will need to investigate.  As a work-around, I will create a button, in Visualforce (just in case this app is installed in
+        a Classic environment) that will take users directly to the app page without having to go through the developer console.
         
 -->
-<aura:component controller="objectFinderController" implements="flexipage:availableForAllPageTypes" access="global" >
+<aura:component controller="objectFinderController">
+
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>
-    <aura:attribute name="initCalled" type="boolean" default="false"/>
-    <aura:attribute name="isDoneRendering" type="Boolean" default="false"/>
-    <!--for forced refresh-->
     <aura:handler event="force:refreshView" action="{!c.doRefresh}" />
+
     <aura:attribute name="debugModeOn" type="boolean" default="false"/>
 
+    
     <aura:attribute name="creatingData" type="boolean" default="false"/>
     <aura:attribute name="deletingData" type="boolean" default="false"/>
-    <aura:attribute name="recordsCreated" type="LIST"/>
+    <aura:attribute name="showUnsupportedObjects" type="Boolean" default="false"/>
+    <aura:attribute name="showAllowedObjects" type="Boolean" default="false"/>
+
+    <aura:attribute name="initCalled" type="boolean" default="false"/>
+    <aura:attribute name="isDoneRendering" type="Boolean" default="false"/>
+    <aura:attribute name="objectsProcessed" type="LIST"/>
+    <aura:attribute name="unsupportedObjects" type="LIST"/>
+    <aura:attribute name="allowedObjects" type="LIST"/>
+    
     <aura:attribute name="showLoading" type="boolean" default="true"/>
     <aura:attribute name="showChangeRecordButton" type="boolean" default="false"/>
     <aura:attribute name="showEditRecordCount" type="boolean" default="false"/>
-    <aura:attribute name="selectedOptions" type="string[]"/>
+  
+     <!--unordered arrays-->   
+    <aura:attribute name="selectedOptions" type="string[]"/> 
     <aura:attribute name="objectRecords" type="string[]"/> 
     <!--Attribute not used in this component but in the helper for to facilitate data manipulation -->
     <aura:attribute name="optionMap" type="Map"/>
+    <!--ordered collection-->
     <aura:attribute name="options" type="List"/>
 
     <H3><b>Factory Data</b></H3>
@@ -34,74 +48,88 @@
     <aura:if isTrue="{!v.showLoading}">
         <center><b><p>Finding Objects...Please Wait</p></b></center>
         <lightning:spinner aura:id="spinner"  variant="brand" size="large"/>
-    </aura:if>
+    </aura:if> <!--!v.showLoading-->
 
     <aura:if isTrue="{!not(v.showLoading)}">
-    <aura:if isTrue="{!not(v.showEditRecordCount)}">
-    <lightning:dualListbox aura:id="duallist"
-                           name="objects"  
-                           label= "Select objects" 
-                           sourceLabel="Available" 
-                           selectedLabel="Selected" 
-                           fieldLevelHelp="Select object for records that you want to create.  Double click on object to change record count."
-                           options="{!v.options}"
-                           value="{!v.selectedOptions}"
-                           onchange="{!c.onSelection}"/>
-    </aura:if>                       
+        <aura:if isTrue="{!not(v.showEditRecordCount)}">
+        <lightning:dualListbox aura:id="duallist"
+                            name="objects"  
+                            label= "Select objects" 
+                            sourceLabel="Available" 
+                            selectedLabel="Selected" 
+                            fieldLevelHelp="Select object for records that you want to create.  Double click on object to change record count."
+                            options="{!v.options}"
+                            value="{!v.selectedOptions}"
+                            onchange="{!c.onSelection}"/>
+        </aura:if> <!--!not(v.showEditRecordCount-->                       
 
-    <!--Use this div to trundle through the list of Lightning:Input components-->
-    <div aura:id="myDiv">
-    <aura:if isTrue="{!v.showEditRecordCount}">
-        <H1><b>Objects and Record Count</b></H1>
-        <lightning:layout>
-            <div class="slds-grid slds-wrap">
-                <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
-                
-                    <aura:if isTrue="{!(mod((index),2)==0)}">
-                        <div class="slds-col slds-align-bottom slds-size_5-of-12">
-                            <b>{!objectOrecord}</b>
-                        </div>
-                    </aura:if>
+        <!--Use this div to trundle through the list of Lightning:Input components-->
+        <div aura:id="myDiv">
+        <aura:if isTrue="{!v.showEditRecordCount}">
+            <H1><b>Objects and Record Count</b></H1>
+            <lightning:layout>
+                <div class="slds-grid slds-wrap">
+                    <aura:iteration items="{!v.objectRecords}" var="objectOrecord" indexVar="index">
+                    
+                        <aura:if isTrue="{!(mod((index),2)==0)}">
+                            <div class="slds-col slds-align-bottom slds-size_5-of-12">
+                                <b>{!objectOrecord}</b>
+                            </div>
+                        </aura:if>
 
-                    <aura:if isTrue="{!(mod((index),2)!=0)}">
-                        <div class="slds-col slds-size_3-of-12">
-                            <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />      
-                        </div>
-                        <div class="slds-col slds-size_12-of-12 ">
-                        </div>
-                    </aura:if>
-                </aura:iteration>
+                        <aura:if isTrue="{!(mod((index),2)!=0)}">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning:input aura:id="recordInput" name="{!index}" value="{!objectOrecord}" type="number"  />      
+                            </div>
+                            <div class="slds-col slds-size_12-of-12 ">
+                            </div>
+                        </aura:if>
+                    </aura:iteration>
+                </div>
+            </lightning:layout>
+            <lightning:button variant="Success" label="Save" title="Save" onclick="{!c.save}"/>
+            <lightning:button variant="Nuetral" label="Cancel" title="Cancel" onclick="{!c.cancel}"/>
+        </aura:if> <!--!v.showEditRecordCount-->
+        </div>
+        <aura:if isTrue="{!v.showChangeRecordButton}">
+            <aura:if isTrue="{!not(v.showEditRecordCount)}"> 
+                <lightning:button variant="Brand" label="Change Record Count" title="Check Record Count" onclick="{!c.changeRecordCount}"/>
+                <lightning:button variant="Success" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
+                <lightning:button variant="Destructive" label="Delete Data" title="Delete Data" onclick="{!c.deleteData}"/>
+                <lightning:button aura:id="unsupportedObjectsButton" variant="Base" label="Show Unsupported Objects" title="Unsupported Objects" onclick="{!c.getUnsupportedObjects}"/>
+                <lightning:button aura:id="allowedObjectsButton" variant="Base" label="Show Allowed Objects" title="Allowed Objects" onclick="{!c.getAllowedObjects}"/>
+            </aura:if>   <!--!not(v.showEditRecordCount-->  
+        </aura:if> <!--!v.showChangeRecordButton-->
+    </aura:if> <!--!not(v.showloading)-->
+    <br/>
+    <aura:if isTrue="{!v.creatingData}">
+        <p style="color:red"> Records for the following objects were created:</p>
+        <aura:iteration items="{!v.objectsProcessed}" var="obj">
+            <div style="color:blue">
+                {!obj} <br/>
             </div>
-        </lightning:layout>
-        <lightning:button variant="Success" label="Save" title="Save" onclick="{!c.save}"/>
-        <lightning:button variant="Nuetral" label="Cancel" title="Cancel" onclick="{!c.save}"/>
-    </aura:if>
-    </div>
-    <aura:if isTrue="{!v.showChangeRecordButton}">
-        <aura:if isTrue="{!not(v.showEditRecordCount)}"> 
-            <lightning:button variant="Brand" label="Change Record Count" title="Check Record Count" onclick="{!c.changeRecordCount}"/>
-            <lightning:button variant="Success" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
-            <lightning:button variant="Destructive" label="Delete Data" title="Delete Data" onclick="{!c.deleteData}"/>
-        </aura:if>    
-    </aura:if>
-</aura:if> <!--showloading-->
-<br/>
-<aura:if isTrue="{!v.creatingData}">
-    <p style="color:red"> Records for the following objects were created:</p>
-    <aura:iteration items="{!v.recordsCreated}" var="records">
-        <div style="color:blue">
-            {!records} <br/>
-        </div>
-    </aura:iteration>
-</aura:if>
-<br/>
-<aura:if isTrue="{!v.deletingData}">
-    <p style="color:red"> Records for the following objects were deleted:</p>
-    <aura:iteration items="{!v.recordsCreated}" var="records">
-        <div style="color:blue">
-            {!records} <br/>
-        </div>
-    </aura:iteration>
-</aura:if>
+        </aura:iteration> 
+    </aura:if> <!--!v.creatingData-->
+    <br/>
+    <aura:if isTrue="{!v.deletingData}">
+        <p style="color:red"> Records for the following objects were deleted:</p>
+        <aura:iteration items="{!v.objectsProcessed}" var="obj">
+            <div style="color:blue">
+                {!obj} <br/>
+            </div>
+        </aura:iteration>
+    </aura:if> <!--!v.deletingData-->
 
+    <aura:if isTrue="{!v.showAllowedObjects}">
+        <p>Following objects are on the allowed list.  All custom objects are on the allowed list</p>
+        <aura:iteration items="{!v.allowedObjects}" var="obj">
+            {!obj} <br/>
+        </aura:iteration>
+    </aura:if>
+    <aura:if isTrue="{!v.showUnsupportedObjects}">
+        <p>Following objects are on the unsupported list.</p>
+        <aura:iteration items="{!v.unsupportedObjects}" var="obj">
+            {!obj} <br/>
+        </aura:iteration>
+    </aura:if>
 </aura:component>

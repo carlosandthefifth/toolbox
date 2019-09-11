@@ -6,6 +6,13 @@
             "package": "dreamhouse",
             "versionName": "ver 0.1",
             "versionNumber": "0.1.0.NEXT"
+        },
+        {
+            "path": "force-app",
+            "package": "MMFactory",
+            "versionName": "ver 0.1",
+            "versionNumber": "0.1.0.NEXT",
+            "default": false
         }
     ],
     "namespace": "",
@@ -13,6 +20,8 @@
     "sourceApiVersion": "46.0",
     "packageAliases": {
         "dreamhouse": "0Ho4T000000CaRgSAK",
-        "dreamhouse@0.1.0-1": "04t4T000000BJ4nQAG"
+        "dreamhouse@0.1.0-1": "04t4T000000BJ4nQAG",
+        "MMFactory": "0Ho3i000000009wCAA",
+        "MMFactory@0.1.0-1": "04t3i000002n8sIAAQ"
     }
 }

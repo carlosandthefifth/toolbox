@@ -7,7 +7,7 @@
     },
 
     cancel: function(component, event, helper) {
-
+        helper.cancel(component, event, helper);
     },
 
     changeRecordCount: function(component, event, helper) {
@@ -24,6 +24,14 @@
 
     doRefresh: function(component, event, helper) {
 
+    },
+
+    getAllowedObjects: function(component, event, helper) {
+        helper.getAllowedObjects(component, event, helper);
+    },
+
+    getUnsupportedObjects: function(component, event, helper) {
+        helper.getUnsupportedObjects(component, event, helper);
     },
 
     save: function(component, event, helper) {
