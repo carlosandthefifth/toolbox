@@ -96,7 +96,7 @@
                 <lightning:button variant="Brand" label="Change Record Count" title="Check Record Count" onclick="{!c.changeRecordCount}"/>
                 <lightning:button variant="Success" label="Create Data" title="Create Data" onclick="{!c.createData}"/>
                 <lightning:button variant="Destructive" label="Delete Data" title="Delete Data" onclick="{!c.deleteData}"/>
-                <lightning:button aura:id="unsupportedObjectsButton" variant="Base" label="Show Unsupported Objects" title="Unsupported Objects" onclick="{!c.getUnsupportedObjects}"/>
+                <!--<lightning:button aura:id="unsupportedObjectsButton" variant="Base" label="Show Unsupported Objects" title="Unsupported Objects" onclick="{!c.getUnsupportedObjects}"/>-->
                 <lightning:button aura:id="allowedObjectsButton" variant="Base" label="Show Allowed Objects" title="Allowed Objects" onclick="{!c.getAllowedObjects}"/>
             </aura:if>   <!--!not(v.showEditRecordCount-->  
         </aura:if> <!--!v.showChangeRecordButton-->
@@ -126,10 +126,14 @@
             {!obj} <br/>
         </aura:iteration>
     </aura:if>
+<!--
+    
+    Decided not to show unsupported objects for right now
     <aura:if isTrue="{!v.showUnsupportedObjects}">
         <p>Following objects are on the unsupported list.</p>
         <aura:iteration items="{!v.unsupportedObjects}" var="obj">
             {!obj} <br/>
         </aura:iteration>
     </aura:if>
+-->
 </aura:component>

@@ -1,3 +1,8 @@
+/*
+
+https://success.salesforce.com/ideaView?id=08730000000aSCfAAM
+*/
+
 public with sharing class objectFinderController {
 
     private static final boolean DEBUG_MODE = true;
@@ -13,8 +18,8 @@ public with sharing class objectFinderController {
 
     // List of objects allowed.  This is the complete list of allowable objects.  We also allow custom objects
     private static List<String> objectAllowList = new List<String> {'Account',  'Campaign', 'Case', 
-         'ConsumptionSchedule', 'Contact', 'ContactRequest', 'Contract', 'Lead', 'Location', 'Opportunity', 'ReturnOrder', 
-        'Shipment', 'WorkOrder', 'WorkTypeGroup'};    
+         'ConsumptionSchedule', 'Contact', 'ContactRequest', 'Contract',  'Lead', 'Location', 'Opportunity', 'ReturnOrder', 
+        'Shipment', 'Task', 'WorkOrder', 'WorkTypeGroup'};    
 
     public class objectFinderException extends Exception {}
 
@@ -90,7 +95,7 @@ public with sharing class objectFinderController {
            system.debug('obj: ' + obj);
         }
         
-      //  Schema.SObjectType anObject = objects.get(objectName);
+        // Schema.SObjectType anObject = objects.get(objectName);
 
         Schema.DescribeSObjectResult describeObject = targetType.getDescribe();
 
@@ -182,6 +187,7 @@ public with sharing class objectFinderController {
         if (fieldName == 'lastmodifiedbyid') return true;
         if (fieldName == 'isdeleted') return true;
         if (fieldName == 'CampaignMemberRecordTypeId') return true;
+        if (fieldName == 'recordtypeid') return true;
         if (fieldName == null) return true;
         if (fieldName == objectName) return true;
 
@@ -256,10 +262,9 @@ public with sharing class objectFinderController {
                             // Some relatedto strings are like this (Contact, Lead)
                             // We need to strip the "(" and ")" plus run a separate query for each object
                             List<String> multObjects = objectNameStr.split(',');
-                            for (String oneObj : multObjects) {
-                                parentRecords.put(field,queryParentRecords(oneObj));
-                                parentCounts.put(field,0);
-                            }
+                            // Just grab the first object
+                            parentRecords.put(field,queryParentRecords(multObjects[0]));
+                            parentCounts.put(field,0);
                         } else {
                             parentRecords.put(field,queryParentRecords(objectNameStr));
                             parentCounts.put(field,0);

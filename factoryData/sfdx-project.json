@@ -2,17 +2,10 @@
     "packageDirectories": [
         {
             "path": "force-app",
-            "default": true,
-            "package": "dreamhouse",
-            "versionName": "ver 0.1",
-            "versionNumber": "0.1.0.NEXT"
-        },
-        {
-            "path": "force-app",
-            "package": "MMFactory",
+            "package": "MMfactorydata",
             "versionName": "ver 0.1",
             "versionNumber": "0.1.0.NEXT",
-            "default": false
+            "default": true
         }
     ],
     "namespace": "",
@@ -22,6 +15,12 @@
         "dreamhouse": "0Ho4T000000CaRgSAK",
         "dreamhouse@0.1.0-1": "04t4T000000BJ4nQAG",
         "MMFactory": "0Ho3i000000009wCAA",
-        "MMFactory@0.1.0-1": "04t3i000002n8sIAAQ"
+        "MMFactory@0.1.0-1": "04t3i000002n8sIAAQ",
+        "MMFactory@0.1.0-2": "04t3i000002n8sNAAQ",
+        "MMFactory@0.1.0-3": "04t3i000002n8sSAAQ",
+        "MMFactory@0.1.0-4": "04t3i000002n8sXAAQ",
+        "MMFactory@0.1.0-5": "04t3i000002n8tBAAQ",
+        "MMfactorydata": "0Ho4T000000KyjLSAS",
+        "MMfactorydata@0.1.0-1": "04t4T000000GkDjQAK"
     }
 }
