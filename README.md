@@ -19,6 +19,7 @@ git reset --hard origin/your_branch
 
 https://login.salesforce.com/packaging/installPackage.apexp?p0=04t4T000000GkDjQAK
 
+PT Sans Narrow Bold Condensed
 OBSTACLE:
 
 Lookup fields with filters may not work:
